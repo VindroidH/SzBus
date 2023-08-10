@@ -88,7 +88,8 @@ public class BusCenter {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-            Log.d(TAG, "[getBusLine] result: " + result + ", " + mBusLine.toString());
+            Log.d(TAG, "[getBusLine] result: " + result
+                    + ", name: " + mBusLine.getName() + ", id: " + mBusLine.getId());
             if (mListener != null) {
                 mListener.onGetBusLineCompleted(result, mBusLine, null);
             }
@@ -119,7 +120,8 @@ public class BusCenter {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-            Log.d(TAG, "[getStation] result: " + result + ", " + mStation.toString());
+            Log.d(TAG, "[getStation] result: " + result
+                    + ", name: " + mStation.getName() + ", id: " + mStation.getId());
             if (mListener != null) {
                 mListener.onGetStationCompleted(result, mStation, null);
             }
@@ -150,7 +152,9 @@ public class BusCenter {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-            Log.d(TAG, "[getStation] result: " + result + ", " + mInfo.toString());
+            Log.d(TAG, "[getStation] result: " + result
+                    + ", next depart: " + mInfo.getNextDepartTime()
+                    + ", bus size: " + mInfo.getRunningBuses().size());
             if (mListener != null) {
                 mListener.onGetBusLineRealTimeInfoCompleted(result, mInfo, null);
             }

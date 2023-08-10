@@ -33,12 +33,6 @@ public class InComingBusLine extends BusLine {
         return "[InComingBusLine] " + super.toString() + " coming: " + mComing;
     }
 
-    @NonNull
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
-    }
-
     @Override
     public int describeContents() {
         return 0;

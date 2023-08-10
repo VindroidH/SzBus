@@ -7,13 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.vindroid.szbus.App;
-import com.vindroid.szbus.ui.busline.BusLineActivity;
 import com.vindroid.szbus.R;
-import com.vindroid.szbus.ui.station.StationActivity;
 import com.vindroid.szbus.databinding.ListItemFavoriteBinding;
 import com.vindroid.szbus.model.Favorite;
 import com.vindroid.szbus.model.InComingBusLine;
 import com.vindroid.szbus.model.Station;
+import com.vindroid.szbus.ui.busline.BusLineActivity;
+import com.vindroid.szbus.ui.station.StationActivity;
 import com.vindroid.szbus.utils.Constants;
 
 import java.util.LinkedList;
@@ -37,8 +37,8 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
     public void updateData(LinkedList<Favorite> favoriteList) {
         try {
             mFavoriteList = new LinkedList<>();
-            for (int i = 0; i < favoriteList.size(); i++) {
-                mFavoriteList.add((Favorite) favoriteList.get(i).clone());
+            for (Favorite favorite : favoriteList) {
+                mFavoriteList.add((Favorite) favorite.clone());
             }
         } catch (CloneNotSupportedException e) {
             Log.e(TAG, "[updateData] cannot deep copy data");

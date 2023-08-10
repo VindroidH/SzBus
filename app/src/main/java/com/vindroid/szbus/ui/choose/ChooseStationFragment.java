@@ -92,9 +92,10 @@ public class ChooseStationFragment extends Fragment implements SearchView.OnQuer
 
     @Override
     public void onItemClick(Object obj) {
-        Log.d(TAG, "[onItemClick] " + obj);
+        StationDetail detail = (StationDetail) obj;
+        Log.d(TAG, "[onItemClick] id: " + detail.getId() + ", name: " + detail.getName());
         Bundle bundle = new Bundle();
-        bundle.putParcelable(Constants.KEY_DATA, (StationDetail) obj);
+        bundle.putParcelable(Constants.KEY_DATA, detail);
         NavHostFragment.findNavController(ChooseStationFragment.this)
                 .navigate(R.id.action_FirstFragment_to_SecondFragment, bundle);
     }

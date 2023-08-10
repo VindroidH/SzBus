@@ -80,6 +80,5 @@ public class MainActivity extends AppCompatActivity {
 
 //        AsyncTask<String, Integer, Boolean> task3 = new BusCenter.GetStation();
 //        task3.execute("60232c7e-37f5-4336-aafb-aec49478ff2d");
-
     }
 }

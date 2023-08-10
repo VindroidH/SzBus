@@ -52,14 +52,11 @@ public class ChooseDateFragment extends Fragment implements View.OnClickListener
         }
 
         mBinding.selectTime.setOnClickListener(this);
-        mBinding.dayGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if (checkedId == R.id.legal_working_day) {
-                    mBinding.customWeek.setVisibility(View.GONE);
-                } else {
-                    mBinding.customWeek.setVisibility(View.VISIBLE);
-                }
+        mBinding.dayGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.legal_working_day) {
+                mBinding.customWeek.setVisibility(View.GONE);
+            } else {
+                mBinding.customWeek.setVisibility(View.VISIBLE);
             }
         });
 

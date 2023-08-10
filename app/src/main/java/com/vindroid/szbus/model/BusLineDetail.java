@@ -77,7 +77,10 @@ public class BusLineDetail extends BusLine {
     @Override
     protected Object clone() throws CloneNotSupportedException {
         BusLineDetail busLine = (BusLineDetail) super.clone();
-        busLine.mStations = new LinkedList<>(mStations);
+        busLine.mStations = new LinkedList<>();
+        for (Station station : mStations) {
+            busLine.mStations.add((Station) station.clone());
+        }
         return busLine;
     }
 

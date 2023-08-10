@@ -87,7 +87,9 @@ public class Station implements Cloneable, Parcelable {
     @NonNull
     @Override
     public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+        Station clone = (Station) super.clone();
+        clone.mSubways = new ArrayList<>(mSubways);
+        return clone;
     }
 
     @Override

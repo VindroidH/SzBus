@@ -53,9 +53,12 @@ public class BusLineRealTimeInfo implements Cloneable, Parcelable {
     @NonNull
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        BusLineRealTimeInfo info = (BusLineRealTimeInfo) super.clone();
-        info.mRunningBuses = new ArrayList<>(mRunningBuses);
-        return info;
+        BusLineRealTimeInfo clone = (BusLineRealTimeInfo) super.clone();
+        clone.mRunningBuses = new ArrayList<>();
+        for (RunningBus bus : mRunningBuses) {
+            clone.mRunningBuses.add((RunningBus) bus.clone());
+        }
+        return clone;
     }
 
     @Override

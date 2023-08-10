@@ -60,7 +60,7 @@ public class BusLineActivity extends AppCompatActivity
         mBusLineDetail = new BusLineDetail();
         mBusLineDetail.setId(getIntent().getStringExtra(Constants.KEY_ID));
         mBusLineDetail.setName(getIntent().getStringExtra(Constants.KEY_NAME));
-        Log.d(TAG, "[onCreate] " + mBusLineDetail.getId() + ", " + mBusLineDetail.getName());
+        Log.d(TAG, "[onCreate] id: " + mBusLineDetail.getId() + ", name: " + mBusLineDetail.getName());
 
         mBinding.toolbar.setTitle(mBusLineDetail.getName());
         mBinding.toolbar.setOnMenuItemClickListener(this);
@@ -87,7 +87,7 @@ public class BusLineActivity extends AppCompatActivity
         mBusLineDetail = new BusLineDetail();
         mBusLineDetail.setId(getIntent().getStringExtra(Constants.KEY_ID));
         mBusLineDetail.setName(getIntent().getStringExtra(Constants.KEY_NAME));
-        Log.d(TAG, "[onNewIntent] " + mBusLineDetail.getId() + ", " + mBusLineDetail.getName());
+        Log.d(TAG, "[onNewIntent] id: " + mBusLineDetail.getId() + ", name: " + mBusLineDetail.getName());
 
         refreshBusLineInfo();
         refreshBusInfo();

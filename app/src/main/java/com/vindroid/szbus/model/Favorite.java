@@ -62,8 +62,10 @@ public class Favorite implements Cloneable, Parcelable {
     @Override
     public Object clone() throws CloneNotSupportedException {
         Favorite clone = (Favorite) super.clone();
-        clone.mStation = (Station) mStation.clone();
-        clone.mBusLineList = new ArrayList<>(mBusLineList);
+        clone.mBusLineList = new ArrayList<>();
+        for (InComingBusLine busLine : mBusLineList) {
+            clone.mBusLineList.add((InComingBusLine) busLine.clone());
+        }
         return clone;
     }
 

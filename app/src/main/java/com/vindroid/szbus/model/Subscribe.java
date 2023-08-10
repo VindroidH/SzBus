@@ -82,7 +82,10 @@ public class Subscribe implements Cloneable, Parcelable {
     @Override
     protected Object clone() throws CloneNotSupportedException {
         Subscribe clone = (Subscribe) super.clone();
-        clone.mBusLines = new LinkedList<>(mBusLines);
+        clone.mBusLines = new LinkedList<>();
+        for (SubscribeBusLine busLine : mBusLines) {
+            clone.mBusLines.add((SubscribeBusLine) busLine.clone());
+        }
         return clone;
     }
 

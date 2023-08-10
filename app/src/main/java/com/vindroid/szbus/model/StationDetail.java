@@ -41,6 +41,17 @@ public class StationDetail extends Station {
         return builder.toString();
     }
 
+    @NonNull
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        StationDetail clone = (StationDetail) super.clone();
+        clone.mBusLines = new ArrayList<>();
+        for (InComingBusLine busLine : mBusLines) {
+            clone.mBusLines.add((InComingBusLine) busLine.clone());
+        }
+        return clone;
+    }
+
     @Override
     public int describeContents() {
         return 0;
