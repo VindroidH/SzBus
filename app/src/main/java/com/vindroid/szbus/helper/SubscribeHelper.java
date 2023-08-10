@@ -1,7 +1,8 @@
-package com.vindroid.szbus;
+package com.vindroid.szbus.helper;
 
 import android.content.SharedPreferences;
 
+import com.vindroid.szbus.App;
 import com.vindroid.szbus.model.BusLine;
 import com.vindroid.szbus.model.InComingBusLine;
 import com.vindroid.szbus.model.Station;
@@ -16,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class SubscribeWaiter {
+public class SubscribeHelper {
     // TODO add error notify time
     private static final String SP_KEY_STATIONS = "stations";
     private static final String SP_KEY_BUS_LINES = "bus_line_%s";

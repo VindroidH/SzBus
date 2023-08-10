@@ -1,7 +1,5 @@
 package com.vindroid.szbus.utils;
 
-import com.vindroid.szbus.R;
-
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 

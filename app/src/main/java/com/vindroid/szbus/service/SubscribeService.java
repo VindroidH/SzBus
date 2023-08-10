@@ -8,7 +8,7 @@ import android.util.Log;
 
 import com.vindroid.szbus.App;
 import com.vindroid.szbus.BusCenter;
-import com.vindroid.szbus.SubscribeWaiter;
+import com.vindroid.szbus.helper.SubscribeHelper;
 import com.vindroid.szbus.model.NotificationInfo;
 import com.vindroid.szbus.model.StationDetail;
 import com.vindroid.szbus.model.Subscribe;
@@ -39,7 +39,7 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         notifList = new ArrayList<>();
-        mList = SubscribeWaiter.getAll();
+        mList = SubscribeHelper.getAll();
         filterByTime();
         mCount = mList.size();
         for (Subscribe subscribe : mList) {

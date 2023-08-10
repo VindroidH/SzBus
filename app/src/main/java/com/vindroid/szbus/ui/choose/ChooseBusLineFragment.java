@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.vindroid.szbus.BusCenter;
-import com.vindroid.szbus.FavoriteWaiter;
+import com.vindroid.szbus.helper.FavoriteHelper;
 import com.vindroid.szbus.R;
 import com.vindroid.szbus.databinding.FragmentChooseBusLineBinding;
 import com.vindroid.szbus.model.InComingBusLine;
@@ -119,7 +119,7 @@ public class ChooseBusLineFragment extends Fragment implements BusCenter.GetStat
                         Toast.LENGTH_LONG).show();
                 return false;
             }
-            FavoriteWaiter.add(mStationDetail, mAdapter.getSelectedItems());
+            FavoriteHelper.add(mStationDetail, mAdapter.getSelectedItems());
             return true;
         }
         return false;

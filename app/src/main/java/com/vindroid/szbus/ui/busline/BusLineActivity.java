@@ -1,4 +1,4 @@
-package com.vindroid.szbus;
+package com.vindroid.szbus.ui.busline;
 
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -11,13 +11,14 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
+import com.vindroid.szbus.App;
+import com.vindroid.szbus.BusCenter;
+import com.vindroid.szbus.R;
 import com.vindroid.szbus.databinding.ActivityBusLineBinding;
 import com.vindroid.szbus.model.BusLineDetail;
 import com.vindroid.szbus.model.BusLineRealTimeInfo;
 import com.vindroid.szbus.model.RunningBus;
 import com.vindroid.szbus.model.Station;
-import com.vindroid.szbus.ui.busline.StationListAdapter;
-import com.vindroid.szbus.ui.busline.StationListDiffUtil;
 import com.vindroid.szbus.utils.Constants;
 import com.vindroid.szbus.utils.Utils;
 

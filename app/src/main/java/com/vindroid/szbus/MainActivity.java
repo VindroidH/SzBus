@@ -9,6 +9,7 @@ import com.vindroid.szbus.databinding.ActivityMainBinding;
 import com.vindroid.szbus.ui.SectionsPagerAdapter;
 import com.vindroid.szbus.ui.main.favorite.FavoriteFragment;
 import com.vindroid.szbus.ui.main.subscribe.SubscribeFragment;
+import com.vindroid.szbus.ui.search.SearchActivity;
 
 import java.util.Arrays;
 import java.util.List;

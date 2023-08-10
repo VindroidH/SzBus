@@ -1,4 +1,4 @@
-package com.vindroid.szbus;
+package com.vindroid.szbus.ui.search;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -7,11 +7,12 @@ import android.util.Log;
 import android.view.View;
 
 import com.google.android.material.tabs.TabLayoutMediator;
+import com.vindroid.szbus.App;
+import com.vindroid.szbus.BusCenter;
+import com.vindroid.szbus.R;
 import com.vindroid.szbus.databinding.ActivitySearchBinding;
 import com.vindroid.szbus.model.SearchResult;
 import com.vindroid.szbus.ui.SectionsPagerAdapter;
-import com.vindroid.szbus.ui.search.SearchResultFragment;
-import com.vindroid.szbus.ui.search.SearchViewModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;

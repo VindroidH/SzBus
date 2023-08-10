@@ -1,8 +1,9 @@
-package com.vindroid.szbus;
+package com.vindroid.szbus.helper;
 
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.vindroid.szbus.App;
 import com.vindroid.szbus.model.BusLine;
 import com.vindroid.szbus.model.Favorite;
 import com.vindroid.szbus.model.InComingBusLine;
@@ -15,14 +16,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-public class FavoriteWaiter {
+public class FavoriteHelper {
     private static final String TAG;
     private static final String SP_KEY_INDEX = "index";
     private static final String SP_KEY_STATIONS = "stations";
     private static final String SP_KEY_BUS_LINE_HEADER = "bus_line_at_%s";
 
     static {
-        TAG = App.getTag(FavoriteWaiter.class.getSimpleName());
+        TAG = App.getTag(FavoriteHelper.class.getSimpleName());
     }
 
     public static LinkedList<Favorite> getAll() {

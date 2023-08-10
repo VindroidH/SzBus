@@ -1,4 +1,4 @@
-package com.vindroid.szbus;
+package com.vindroid.szbus.helper;
 
 import android.app.Activity;
 import android.app.NotificationChannel;
@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.widget.RemoteViews;
+
+import com.vindroid.szbus.R;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;

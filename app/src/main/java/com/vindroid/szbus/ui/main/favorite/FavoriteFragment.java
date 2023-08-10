@@ -12,7 +12,7 @@ import android.view.animation.AnimationUtils;
 
 import com.vindroid.szbus.App;
 import com.vindroid.szbus.BusCenter;
-import com.vindroid.szbus.FavoriteWaiter;
+import com.vindroid.szbus.helper.FavoriteHelper;
 import com.vindroid.szbus.R;
 import com.vindroid.szbus.databinding.FragmentFavoriteBinding;
 import com.vindroid.szbus.model.Favorite;
@@ -80,7 +80,8 @@ public class FavoriteFragment extends Fragment implements View.OnClickListener, 
     @Override
     public void onResume() {
         super.onResume();
-        if (System.currentTimeMillis() - mUpdateTimeMills >= Constants.MIN_REFRESH_INTERVAL) {
+        if (mFavorites.size() > 0
+                && System.currentTimeMillis() - mUpdateTimeMills >= Constants.MIN_REFRESH_INTERVAL) {
             refreshAll();
         }
     }
@@ -131,7 +132,7 @@ public class FavoriteFragment extends Fragment implements View.OnClickListener, 
     }
 
     private void loadFavorite() {
-        mFavorites = FavoriteWaiter.getAll();
+        mFavorites = FavoriteHelper.getAll();
         mStationIds = new ArrayList<>();
         for (Favorite favorite : mFavorites) {
             if (!mStationIds.contains(favorite.getStation().getId())) {
