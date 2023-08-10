@@ -2,14 +2,13 @@ package com.vindroid.szbus.ui.station;
 
 import android.content.Intent;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
-import android.widget.TextView;
 
 import com.vindroid.szbus.App;
-import com.vindroid.szbus.BusLineActivity;
+import com.vindroid.szbus.ui.busline.BusLineActivity;
 import com.vindroid.szbus.R;
+import com.vindroid.szbus.databinding.ListItemBusLineBinding;
+import com.vindroid.szbus.databinding.StubItemTextviewBinding;
 import com.vindroid.szbus.model.InComingBusLine;
 import com.vindroid.szbus.utils.Constants;
 
@@ -44,27 +43,27 @@ public class BusLineListAdapter extends RecyclerView.Adapter<BusLineListAdapter.
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_bus_line, parent, false);
-        return new ViewHolder(view);
+        ListItemBusLineBinding binding = ListItemBusLineBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         InComingBusLine busLine = mBusLines.get(position);
-        holder.busLineName.setText(busLine.getName());
-        holder.busLineTo.setText(busLine.getEndStationName());
+        holder.binding.busLineName.setText(busLine.getName());
+        holder.binding.busLineTo.setText(busLine.getEndStationName());
         int coming = busLine.getComing();
         if (coming == InComingBusLine.COMING_ERR) {
-            holder.busLineStatus.setText(R.string.coming_err);
-            holder.busLineStatus.setTextColor(App.getColorById(R.color.red));
+            holder.textViewBinding.status.setText(R.string.coming_err);
+            holder.textViewBinding.status.setTextColor(App.getColorById(R.color.red));
         } else if (coming == InComingBusLine.COMING_NO) {
-            holder.busLineStatus.setText(R.string.coming_not);
+            holder.textViewBinding.status.setText(R.string.coming_not);
         } else if (coming == InComingBusLine.COMING_NOW) {
-            holder.busLineStatus.setText(R.string.coming_now);
-            holder.busLineStatus.setTextColor(App.getColorById(R.color.red));
+            holder.textViewBinding.status.setText(R.string.coming_now);
+            holder.textViewBinding.status.setTextColor(App.getColorById(R.color.red));
         } else {
-            holder.busLineStatus.setText(String.format(App.getStringById(R.string.coming_still), coming));
+            holder.textViewBinding.status.setText(String.format(App.getStringById(R.string.coming_still), coming));
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -82,17 +81,16 @@ public class BusLineListAdapter extends RecyclerView.Adapter<BusLineListAdapter.
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView busLineName;
-        public TextView busLineTo;
-        public TextView busLineStatus;
+        ListItemBusLineBinding binding;
+        StubItemTextviewBinding textViewBinding;
 
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            ViewStub viewStub = itemView.findViewById(R.id.stub_info);
-            viewStub.inflate();
-            busLineName = itemView.findViewById(R.id.bus_line_name);
-            busLineTo = itemView.findViewById(R.id.bus_line_to);
-            busLineStatus = itemView.findViewById(R.id.status);
+        public ViewHolder(ListItemBusLineBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+
+            binding.stubInfo.setOnInflateListener(
+                    (stub, inflated) -> textViewBinding = StubItemTextviewBinding.bind(inflated));
+            binding.stubInfo.inflate();
         }
     }
 }

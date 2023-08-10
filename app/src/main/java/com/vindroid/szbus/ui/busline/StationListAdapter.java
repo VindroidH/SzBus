@@ -4,12 +4,10 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.vindroid.szbus.App;
-import com.vindroid.szbus.R;
-import com.vindroid.szbus.StationActivity;
+import com.vindroid.szbus.ui.station.StationActivity;
+import com.vindroid.szbus.databinding.ListItemStationBinding;
 import com.vindroid.szbus.model.RunningBus;
 import com.vindroid.szbus.model.Station;
 import com.vindroid.szbus.utils.Constants;
@@ -56,20 +54,20 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
     @NonNull
     @Override
     public StationListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_station, parent, false);
-        return new StationListAdapter.ViewHolder(view);
+        ListItemStationBinding binding = ListItemStationBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull StationListAdapter.ViewHolder holder, int position) {
         Station station = mStations.get(position);
         String stationId = station.getId();
-        holder.stationIndexView.setText(String.valueOf(position));
-        holder.stationNameView.setText(station.getName());
+        holder.binding.stationIndex.setText(String.valueOf(position));
+        holder.binding.stationName.setText(station.getName());
         // TODO edit subway ui style
         if (station.getSubways().size() > 0) {
-            holder.subwayView.setText(Arrays.toString(station.getSubways().toArray()));
+            holder.binding.subway.setText(Arrays.toString(station.getSubways().toArray()));
         }
 
         RunningBus bus = null;
@@ -79,12 +77,12 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
                 break;
             }
         }
-        holder.busIconView.setVisibility(bus != null ? View.VISIBLE : View.INVISIBLE);
-        holder.busNameView.setVisibility(bus != null ? View.VISIBLE : View.GONE);
-        holder.busComingView.setVisibility(bus != null ? View.VISIBLE : View.GONE);
+        holder.binding.busIcon.setVisibility(bus != null ? View.VISIBLE : View.INVISIBLE);
+        holder.binding.busName.setVisibility(bus != null ? View.VISIBLE : View.GONE);
+        holder.binding.busTime.setVisibility(bus != null ? View.VISIBLE : View.GONE);
         if (bus != null) {
-            holder.busNameView.setText(bus.getInfo());
-            holder.busComingView.setText(bus.getInTime());
+            holder.binding.busName.setText(bus.getInfo());
+            holder.binding.busTime.setText(bus.getInTime());
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -102,21 +100,11 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        public ImageView busIconView;
-        public TextView stationIndexView;
-        public TextView stationNameView;
-        public TextView subwayView;
-        public TextView busNameView;
-        public TextView busComingView;
+        ListItemStationBinding binding;
 
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            busIconView = itemView.findViewById(R.id.bus_icon);
-            stationIndexView = itemView.findViewById(R.id.station_index);
-            stationNameView = itemView.findViewById(R.id.station_name);
-            subwayView = itemView.findViewById(R.id.subway);
-            busNameView = itemView.findViewById(R.id.bus_name);
-            busComingView = itemView.findViewById(R.id.bus_time);
+        public ViewHolder(ListItemStationBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }

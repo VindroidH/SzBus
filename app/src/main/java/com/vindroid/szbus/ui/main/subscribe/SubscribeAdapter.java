@@ -1,12 +1,10 @@
 package com.vindroid.szbus.ui.main.subscribe;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.vindroid.szbus.App;
-import com.vindroid.szbus.R;
+import com.vindroid.szbus.databinding.ListItemSubscribeBinding;
 import com.vindroid.szbus.model.Subscribe;
 
 import java.util.LinkedList;
@@ -38,9 +36,9 @@ public class SubscribeAdapter extends RecyclerView.Adapter<SubscribeAdapter.View
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_subscribe, parent, false);
-        return new ViewHolder(view);
+        ListItemSubscribeBinding binding = ListItemSubscribeBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolder(binding);
     }
 
     @Override
@@ -73,18 +71,11 @@ public class SubscribeAdapter extends RecyclerView.Adapter<SubscribeAdapter.View
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView stationName;
-        public TextView notifyStartTime;
-        public TextView notifyEndTime;
-        public TextView notifyDate;
+        ListItemSubscribeBinding binding;
 
-        public TextView busLineName;
-        public TextView busLineAhead;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            busLineName = itemView.findViewById(R.id.bus_line_name);
-            busLineAhead = itemView.findViewById(R.id.bus_line_ahead);
+        public ViewHolder(ListItemSubscribeBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }

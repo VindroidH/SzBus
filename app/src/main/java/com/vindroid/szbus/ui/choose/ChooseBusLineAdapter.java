@@ -2,15 +2,12 @@ package com.vindroid.szbus.ui.choose;
 
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewStub;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import com.vindroid.szbus.App;
-import com.vindroid.szbus.R;
+import com.vindroid.szbus.databinding.ListItemBusLineBinding;
+import com.vindroid.szbus.databinding.StubItemAheadBinding;
+import com.vindroid.szbus.databinding.StubItemCheckboxBinding;
 import com.vindroid.szbus.model.InComingBusLine;
 import com.vindroid.szbus.utils.Constants;
 
@@ -61,28 +58,29 @@ public class ChooseBusLineAdapter extends RecyclerView.Adapter<ChooseBusLineAdap
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_bus_line, parent, false);
-        return new ViewHolder(view, mType);
+        ListItemBusLineBinding binding = ListItemBusLineBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolder(binding, mType);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         InComingBusLine info = mBusLines.get(position);
-        holder.busLineName.setText(info.getName());
-        holder.busLineTo.setText(info.getEndStationName());
-        holder.checkBox.setChecked(mSelectedItems.containsKey(info.getId()));
+        holder.binding.busLineName.setText(info.getName());
+        holder.binding.busLineTo.setText(info.getEndStationName());
+
+        holder.checkboxBinding.checkbox.setChecked(mSelectedItems.containsKey(info.getId()));
         if (Constants.TYPE_SUBSCRIBE.equals(mType)) {
             if (mExtraValues.containsKey(info.getId())) {
-                holder.aheadInput.setText(mExtraValues.get(info.getId()));
+                holder.aheadBinding.input.setText(mExtraValues.get(info.getId()));
             }
         }
 
-        holder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        holder.checkboxBinding.checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 mSelectedItems.put(info.getId(), info);
                 if (Constants.TYPE_SUBSCRIBE.equals(mType)) {
-                    String text = holder.aheadInput.getText().toString();
+                    String text = holder.aheadBinding.input.getText().toString();
                     if (TextUtils.isEmpty(text)) text = String.valueOf(Constants.DEFAULT_AHEAD);
                     mExtraValues.put(info.getId(), text);
                 }
@@ -93,9 +91,15 @@ public class ChooseBusLineAdapter extends RecyclerView.Adapter<ChooseBusLineAdap
                 }
             }
         });
-        holder.itemView.setOnClickListener(v -> {
-            holder.checkBox.setChecked(!holder.checkBox.isChecked());
-        });
+
+        holder.itemView.setOnClickListener(v -> holder.checkboxBinding.checkbox.setChecked(
+                !holder.checkboxBinding.checkbox.isChecked()));
+    }
+
+    @Override
+    public void onViewRecycled(@NonNull ViewHolder holder) {
+        super.onViewRecycled(holder);
+        holder.checkboxBinding.checkbox.setOnCheckedChangeListener(null);
     }
 
     @Override
@@ -104,26 +108,23 @@ public class ChooseBusLineAdapter extends RecyclerView.Adapter<ChooseBusLineAdap
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView busLineName;
-        public TextView busLineTo;
-        public EditText aheadInput;
-        public CheckBox checkBox;
+        ListItemBusLineBinding binding;
+        StubItemCheckboxBinding checkboxBinding;
+        StubItemAheadBinding aheadBinding;
 
-        public ViewHolder(@NonNull View itemView, String type) {
-            super(itemView);
-            busLineName = itemView.findViewById(R.id.bus_line_name);
-            busLineTo = itemView.findViewById(R.id.bus_line_to);
+        public ViewHolder(ListItemBusLineBinding binding, String type) {
+            super(binding.getRoot());
+            this.binding = binding;
 
-            ViewStub viewStub;
+            binding.stubCheckbox.setOnInflateListener(
+                    (stub, inflated) -> checkboxBinding = StubItemCheckboxBinding.bind(inflated));
+            binding.stubCheckbox.inflate();
+
             if (Constants.TYPE_SUBSCRIBE.equals(type)) {
-                viewStub = itemView.findViewById(R.id.stub_ahead);
-                viewStub.inflate();
-                aheadInput = itemView.findViewById(R.id.input);
-            } else {
-                viewStub = itemView.findViewById(R.id.stub_checkbox);
-                viewStub.inflate();
+                binding.stubAhead.setOnInflateListener(
+                        (stub, inflated) -> aheadBinding = StubItemAheadBinding.bind(inflated));
+                binding.stubAhead.inflate();
             }
-            checkBox = itemView.findViewById(R.id.checkbox);
         }
     }
 }

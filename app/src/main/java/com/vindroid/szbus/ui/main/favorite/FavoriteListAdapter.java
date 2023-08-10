@@ -5,13 +5,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.vindroid.szbus.App;
-import com.vindroid.szbus.BusLineActivity;
+import com.vindroid.szbus.ui.busline.BusLineActivity;
 import com.vindroid.szbus.R;
-import com.vindroid.szbus.StationActivity;
+import com.vindroid.szbus.ui.station.StationActivity;
+import com.vindroid.szbus.databinding.ListItemFavoriteBinding;
 import com.vindroid.szbus.model.Favorite;
 import com.vindroid.szbus.model.InComingBusLine;
 import com.vindroid.szbus.model.Station;
@@ -54,9 +53,9 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.list_item_favorite, parent, false);
-        return new ViewHolder(view);
+        ListItemFavoriteBinding binding = ListItemFavoriteBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolder(binding);
     }
 
     @Override
@@ -81,29 +80,29 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
         }
         if (busLine == null) busLine = new InComingBusLine();
         if (station != null) {
-            holder.stationName.setVisibility(View.VISIBLE);
-            holder.stationName.setText(station.getName());
+            holder.binding.stationName.setVisibility(View.VISIBLE);
+            holder.binding.stationName.setText(station.getName());
         } else {
-            holder.stationName.setVisibility(View.GONE);
+            holder.binding.stationName.setVisibility(View.GONE);
         }
 
-        holder.busLineName.setText(busLine.getName());
+        holder.binding.busLineName.setText(busLine.getName());
         int coming = busLine.getComing();
         if (coming == InComingBusLine.COMING_ERR) {
-            holder.busLineStatus.setText(R.string.coming_err);
-            holder.busLineStatus.setTextColor(App.getColorById(R.color.red));
+            holder.binding.busLineStatus.setText(R.string.coming_err);
+            holder.binding.busLineStatus.setTextColor(App.getColorById(R.color.red));
         } else if (coming == InComingBusLine.COMING_NO) {
-            holder.busLineStatus.setText(R.string.coming_not);
+            holder.binding.busLineStatus.setText(R.string.coming_not);
         } else if (coming == InComingBusLine.COMING_NOW) {
-            holder.busLineStatus.setText(R.string.coming_now);
-            holder.busLineStatus.setTextColor(App.getColorById(R.color.red));
+            holder.binding.busLineStatus.setText(R.string.coming_now);
+            holder.binding.busLineStatus.setTextColor(App.getColorById(R.color.red));
         } else {
-            holder.busLineStatus.setText(String.format(App.getStringById(R.string.coming_still), coming));
+            holder.binding.busLineStatus.setText(String.format(App.getStringById(R.string.coming_still), coming));
         }
 
         if (station != null) {
             final Station fStation = station;
-            holder.stationName.setOnClickListener(v -> {
+            holder.binding.stationName.setOnClickListener(v -> {
                 Intent intent = new Intent(v.getContext(), StationActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 intent.putExtra(Constants.KEY_ID, fStation.getId());
@@ -113,7 +112,7 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
             });
         }
         final InComingBusLine fBusLine = busLine;
-        holder.busLineRoot.setOnClickListener(v -> {
+        holder.binding.busLineRoot.setOnClickListener(v -> {
             Intent intent = new Intent(v.getContext(), BusLineActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             intent.putExtra(Constants.KEY_ID, fBusLine.getId());
@@ -133,17 +132,11 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView stationName;
-        public RelativeLayout busLineRoot;
-        public TextView busLineName;
-        public TextView busLineStatus;
+        ListItemFavoriteBinding binding;
 
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            stationName = itemView.findViewById(R.id.station_name);
-            busLineRoot = itemView.findViewById(R.id.bus_line_root);
-            busLineName = itemView.findViewById(R.id.bus_line_name);
-            busLineStatus = itemView.findViewById(R.id.bus_line_status);
+        public ViewHolder(ListItemFavoriteBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }

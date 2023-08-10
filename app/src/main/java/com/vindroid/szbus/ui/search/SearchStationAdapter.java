@@ -2,13 +2,11 @@ package com.vindroid.szbus.ui.search;
 
 import android.content.Intent;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.vindroid.szbus.App;
-import com.vindroid.szbus.R;
-import com.vindroid.szbus.StationActivity;
+import com.vindroid.szbus.ui.station.StationActivity;
+import com.vindroid.szbus.databinding.ItemSearchStationBinding;
 import com.vindroid.szbus.model.StationDetail;
 import com.vindroid.szbus.utils.Constants;
 
@@ -52,16 +50,17 @@ public class SearchStationAdapter extends RecyclerView.Adapter<SearchStationAdap
     @NonNull
     @Override
     public SearchStationAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_search_station, parent, false);
-        return new SearchStationAdapter.ViewHolder(view);
+        ItemSearchStationBinding binding = ItemSearchStationBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull SearchStationAdapter.ViewHolder holder, int position) {
         final StationDetail station = mStationList.get(position);
-        holder.nameView.setText(station.getName());
-        holder.addressView.setText(station.getAddress());
-        holder.busLinesView.setText(station.getBusLinesText());
+        holder.binding.stationName.setText(station.getName());
+        holder.binding.stationAddress.setText(station.getAddress());
+        holder.binding.stationBusLines.setText(station.getBusLinesText());
 
         holder.itemView.setOnClickListener(v -> {
             if (mListener == null) {
@@ -82,15 +81,11 @@ public class SearchStationAdapter extends RecyclerView.Adapter<SearchStationAdap
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView nameView;
-        public TextView addressView;
-        public TextView busLinesView;
+        ItemSearchStationBinding binding;
 
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            nameView = itemView.findViewById(R.id.station_name);
-            addressView = itemView.findViewById(R.id.station_address);
-            busLinesView = itemView.findViewById(R.id.station_bus_lines);
+        public ViewHolder(ItemSearchStationBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }

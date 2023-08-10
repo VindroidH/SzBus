@@ -2,13 +2,11 @@ package com.vindroid.szbus.ui.search;
 
 import android.content.Intent;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.vindroid.szbus.App;
-import com.vindroid.szbus.BusLineActivity;
-import com.vindroid.szbus.R;
+import com.vindroid.szbus.ui.busline.BusLineActivity;
+import com.vindroid.szbus.databinding.ItemSearchBusLineBinding;
 import com.vindroid.szbus.model.BusLine;
 import com.vindroid.szbus.utils.Constants;
 
@@ -41,16 +39,17 @@ public class SearchBusLineAdapter extends RecyclerView.Adapter<SearchBusLineAdap
     @NonNull
     @Override
     public SearchBusLineAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_search_bus_line, parent, false);
-        return new SearchBusLineAdapter.ViewHolder(view);
+        ItemSearchBusLineBinding binding = ItemSearchBusLineBinding.inflate(
+                LayoutInflater.from(parent.getContext()), parent, false);
+        return new ViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         BusLine busLine = mBusLineList.get(position);
-        holder.nameView.setText(busLine.getName());
-        holder.fromView.setText(busLine.getStartStationName());
-        holder.toView.setText(busLine.getEndStationName());
+        holder.binding.busName.setText(busLine.getName());
+        holder.binding.busFrom.setText(busLine.getStartStationName());
+        holder.binding.busTo.setText(busLine.getEndStationName());
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(v.getContext(), BusLineActivity.class);
@@ -67,15 +66,11 @@ public class SearchBusLineAdapter extends RecyclerView.Adapter<SearchBusLineAdap
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView nameView;
-        public TextView fromView;
-        public TextView toView;
+        ItemSearchBusLineBinding binding;
 
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            nameView = itemView.findViewById(R.id.bus_name);
-            fromView = itemView.findViewById(R.id.bus_from);
-            toView = itemView.findViewById(R.id.bus_to);
+        public ViewHolder(ItemSearchBusLineBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
         }
     }
 }
