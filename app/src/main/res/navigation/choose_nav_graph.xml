@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/ChooseStationFragment">
+
+    <fragment
+        android:id="@+id/ChooseStationFragment"
+        android:name="com.vindroid.szbus.ui.choose.ChooseStationFragment"
+        android:label="@string/choose_station"
+        tools:layout="@layout/fragment_choose_station">
+
+        <action
+            android:id="@+id/action_FirstFragment_to_SecondFragment"
+            app:destination="@id/ChooseBusLineFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/ChooseBusLineFragment"
+        android:name="com.vindroid.szbus.ui.choose.ChooseBusLineFragment"
+        android:label="@string/choose_bus_line"
+        tools:layout="@layout/fragment_choose_bus_line">
+
+        <action
+            android:id="@+id/action_SecondFragment_to_ThirdFragment"
+            app:destination="@id/ChooseDateFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/ChooseDateFragment"
+        android:name="com.vindroid.szbus.ui.choose.ChooseDateFragment"
+        android:label="@string/choose_date"
+        tools:layout="@layout/fragment_choose_date">
+
+        <action
+            android:id="@+id/action_ThirdFragment_to_SecondFragment"
+            app:destination="@id/ChooseBusLineFragment" />
+    </fragment>
+</navigation>

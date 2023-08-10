@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/station_start_root"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/start_station" />
+
+        <TextView
+            android:id="@+id/station_start_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="站台1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/station_end_root"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/end_station" />
+
+        <TextView
+            android:id="@+id/station_end_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="站台1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bus_first_time" />
+
+            <TextView
+                android:id="@+id/bus_first_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="6:0" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bus_end_time" />
+
+            <TextView
+                android:id="@+id/bus_last_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="21:00" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/next_depart_time" />
+
+        <TextView
+            android:id="@+id/next_depart_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="13:20" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/last_update" />
+
+        <TextView
+            android:id="@+id/update_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="13:45:31" />
+    </LinearLayout>
+</LinearLayout>
