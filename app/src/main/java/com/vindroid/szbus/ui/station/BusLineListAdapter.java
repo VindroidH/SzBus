@@ -5,11 +5,11 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.vindroid.szbus.App;
-import com.vindroid.szbus.ui.busline.BusLineActivity;
 import com.vindroid.szbus.R;
 import com.vindroid.szbus.databinding.ListItemBusLineBinding;
 import com.vindroid.szbus.databinding.StubItemTextviewBinding;
 import com.vindroid.szbus.model.InComingBusLine;
+import com.vindroid.szbus.ui.busline.BusLineActivity;
 import com.vindroid.szbus.utils.Constants;
 
 import java.util.ArrayList;
@@ -20,13 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class BusLineListAdapter extends RecyclerView.Adapter<BusLineListAdapter.ViewHolder> {
-    private final static String TAG;
-
     private List<InComingBusLine> mBusLines;
-
-    static {
-        TAG = App.getTag(BusLineListAdapter.class.getSimpleName());
-    }
 
     public BusLineListAdapter() {
         mBusLines = new LinkedList<>();
@@ -53,17 +47,20 @@ public class BusLineListAdapter extends RecyclerView.Adapter<BusLineListAdapter.
         InComingBusLine busLine = mBusLines.get(position);
         holder.binding.busLineName.setText(busLine.getName());
         holder.binding.busLineTo.setText(busLine.getEndStationName());
-        int coming = busLine.getComing();
-        if (coming == InComingBusLine.COMING_ERR) {
-            holder.textViewBinding.status.setText(R.string.coming_err);
-            holder.textViewBinding.status.setTextColor(App.getColorById(R.color.red));
-        } else if (coming == InComingBusLine.COMING_NO) {
-            holder.textViewBinding.status.setText(R.string.coming_not);
-        } else if (coming == InComingBusLine.COMING_NOW) {
-            holder.textViewBinding.status.setText(R.string.coming_now);
-            holder.textViewBinding.status.setTextColor(App.getColorById(R.color.red));
-        } else {
-            holder.textViewBinding.status.setText(String.format(App.getStringById(R.string.coming_still), coming));
+
+        if (holder.textViewBinding != null) {
+            int coming = busLine.getComing();
+            if (coming == InComingBusLine.COMING_ERR) {
+                holder.textViewBinding.status.setText(R.string.coming_err);
+                holder.textViewBinding.status.setTextColor(App.getColorById(R.color.red));
+            } else if (coming == InComingBusLine.COMING_NO) {
+                holder.textViewBinding.status.setText(R.string.coming_not);
+            } else if (coming == InComingBusLine.COMING_NOW) {
+                holder.textViewBinding.status.setText(R.string.coming_now);
+                holder.textViewBinding.status.setTextColor(App.getColorById(R.color.red));
+            } else {
+                holder.textViewBinding.status.setText(String.format(App.getStringById(R.string.coming_still), coming));
+            }
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -88,9 +85,9 @@ public class BusLineListAdapter extends RecyclerView.Adapter<BusLineListAdapter.
             super(binding.getRoot());
             this.binding = binding;
 
-            binding.stubInfo.setOnInflateListener(
+            this.binding.stubInfo.setOnInflateListener(
                     (stub, inflated) -> textViewBinding = StubItemTextviewBinding.bind(inflated));
-            binding.stubInfo.inflate();
+            this.binding.stubInfo.inflate();
         }
     }
 }

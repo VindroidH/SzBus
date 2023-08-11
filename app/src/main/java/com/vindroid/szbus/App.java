@@ -2,7 +2,6 @@ package com.vindroid.szbus;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.SharedPreferences;
 
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
@@ -18,22 +17,23 @@ import javax.net.ssl.X509TrustManager;
 import okhttp3.OkHttpClient;
 
 public class App extends Application {
-
-    public static final String TAG = "SzBus";
-    private static OkHttpClient mHttpClient;
+    private static final String TAG = "SzBus";
 
     private static Context sContext;
-    private static SharedPreferences mFavoriteSp;
-    private static SharedPreferences mSubscribeSp;
-
-    public static String getTag(String tag) {
-        return TAG + "." + tag;
-    }
+    private static OkHttpClient mHttpClient;
 
     @Override
     public void onCreate() {
         super.onCreate();
         sContext = this.getApplicationContext();
+    }
+
+    public static Context getContext() {
+        return sContext;
+    }
+
+    public static String getTag(String tag) {
+        return TAG + "." + tag;
     }
 
     public static String getStringById(int id) {
@@ -55,20 +55,6 @@ public class App extends Application {
             return 0;
         }
         return sContext.getColor(id);
-    }
-
-    public static SharedPreferences getFavoriteSp() {
-        if (mFavoriteSp == null) {
-            mFavoriteSp = sContext.getSharedPreferences("favorite_sp", Context.MODE_PRIVATE);
-        }
-        return mFavoriteSp;
-    }
-
-    public static SharedPreferences getSubscribeSp() {
-        if (mSubscribeSp == null) {
-            mSubscribeSp = sContext.getSharedPreferences("subscribe_sp", Context.MODE_PRIVATE);
-        }
-        return mSubscribeSp;
     }
 
     public static OkHttpClient getHttpClient() {

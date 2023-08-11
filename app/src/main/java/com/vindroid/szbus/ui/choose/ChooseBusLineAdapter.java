@@ -1,10 +1,11 @@
 package com.vindroid.szbus.ui.choose;
 
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.vindroid.szbus.App;
 import com.vindroid.szbus.databinding.ListItemBusLineBinding;
 import com.vindroid.szbus.databinding.StubItemAheadBinding;
 import com.vindroid.szbus.databinding.StubItemCheckboxBinding;
@@ -21,16 +22,10 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ChooseBusLineAdapter extends RecyclerView.Adapter<ChooseBusLineAdapter.ViewHolder> {
-    private final static String TAG;
-
     private final String mType;
     private List<InComingBusLine> mBusLines;
     private final Map<String, InComingBusLine> mSelectedItems;
     private final Map<String, String> mExtraValues;
-
-    static {
-        TAG = App.getTag(ChooseBusLineAdapter.class.getSimpleName());
-    }
 
     public ChooseBusLineAdapter(String type) {
         mType = type;
@@ -69,37 +64,58 @@ public class ChooseBusLineAdapter extends RecyclerView.Adapter<ChooseBusLineAdap
         holder.binding.busLineName.setText(info.getName());
         holder.binding.busLineTo.setText(info.getEndStationName());
 
-        holder.checkboxBinding.checkbox.setChecked(mSelectedItems.containsKey(info.getId()));
-        if (Constants.TYPE_SUBSCRIBE.equals(mType)) {
+        if (holder.checkboxBinding != null) {
+            holder.checkboxBinding.checkbox.setChecked(mSelectedItems.containsKey(info.getId()));
+            holder.checkboxBinding.checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                if (isChecked) {
+                    mSelectedItems.put(info.getId(), info);
+                    if (holder.aheadBinding != null) {
+                        String text = holder.aheadBinding.input.getText().toString();
+                        mExtraValues.put(info.getId(),
+                                TextUtils.isEmpty(text) ? String.valueOf(Constants.DEFAULT_AHEAD) : text);
+                    }
+                } else {
+                    mSelectedItems.remove(info.getId());
+                    if (holder.aheadBinding != null) {
+                        mExtraValues.remove(info.getId());
+                    }
+                }
+            });
+            holder.itemView.setOnClickListener(v -> holder.checkboxBinding.checkbox.setChecked(
+                    !holder.checkboxBinding.checkbox.isChecked()));
+        }
+
+        if (holder.aheadBinding != null) {
             if (mExtraValues.containsKey(info.getId())) {
                 holder.aheadBinding.input.setText(mExtraValues.get(info.getId()));
             }
+            holder.aheadBinding.input.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if (TextUtils.isEmpty(s)) {
+                        mExtraValues.put(info.getId(), String.valueOf(Constants.DEFAULT_AHEAD));
+                    } else {
+                        mExtraValues.put(info.getId(), s.toString());
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+            });
         }
-
-        holder.checkboxBinding.checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                mSelectedItems.put(info.getId(), info);
-                if (Constants.TYPE_SUBSCRIBE.equals(mType)) {
-                    String text = holder.aheadBinding.input.getText().toString();
-                    if (TextUtils.isEmpty(text)) text = String.valueOf(Constants.DEFAULT_AHEAD);
-                    mExtraValues.put(info.getId(), text);
-                }
-            } else {
-                mSelectedItems.remove(info.getId());
-                if (Constants.TYPE_SUBSCRIBE.equals(mType)) {
-                    mExtraValues.remove(info.getId());
-                }
-            }
-        });
-
-        holder.itemView.setOnClickListener(v -> holder.checkboxBinding.checkbox.setChecked(
-                !holder.checkboxBinding.checkbox.isChecked()));
     }
 
     @Override
     public void onViewRecycled(@NonNull ViewHolder holder) {
         super.onViewRecycled(holder);
-        holder.checkboxBinding.checkbox.setOnCheckedChangeListener(null);
+        if (holder.checkboxBinding != null) {
+            holder.checkboxBinding.checkbox.setOnCheckedChangeListener(null);
+        }
     }
 
     @Override
@@ -116,14 +132,14 @@ public class ChooseBusLineAdapter extends RecyclerView.Adapter<ChooseBusLineAdap
             super(binding.getRoot());
             this.binding = binding;
 
-            binding.stubCheckbox.setOnInflateListener(
+            this.binding.stubCheckbox.setOnInflateListener(
                     (stub, inflated) -> checkboxBinding = StubItemCheckboxBinding.bind(inflated));
-            binding.stubCheckbox.inflate();
+            this.binding.stubCheckbox.inflate();
 
             if (Constants.TYPE_SUBSCRIBE.equals(type)) {
-                binding.stubAhead.setOnInflateListener(
+                this.binding.stubAhead.setOnInflateListener(
                         (stub, inflated) -> aheadBinding = StubItemAheadBinding.bind(inflated));
-                binding.stubAhead.inflate();
+                this.binding.stubAhead.inflate();
             }
         }
     }

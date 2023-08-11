@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:background="@drawable/bus_line_header"
+        android:background="@drawable/bg_bus_line_header"
         android:gravity="center_vertical"
         android:minHeight="50dp"
         android:paddingStart="20dp"

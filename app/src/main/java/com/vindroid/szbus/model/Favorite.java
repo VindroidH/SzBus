@@ -12,8 +12,10 @@ import androidx.annotation.NonNull;
 public class Favorite implements Cloneable, Parcelable {
     private Station mStation;
     private List<InComingBusLine> mBusLineList = new ArrayList<>();
+    private int mIndex;
 
     public Favorite() {
+        mIndex = 0;
     }
 
     public Station getStation() {
@@ -43,6 +45,24 @@ public class Favorite implements Cloneable, Parcelable {
 
     public void addBusLine(InComingBusLine busLine) {
         mBusLineList.add(busLine);
+    }
+
+    public int getIndex() {
+        return mIndex;
+    }
+
+    public void setIndex(int index) {
+        mIndex = index;
+    }
+
+    public void sortBusLines() {
+//        mBusLineList.sort(new Comparator<InComingBusLine>() {
+//            @Override
+//            public int compare(InComingBusLine o1, InComingBusLine o2) {
+//                return 0;
+//            }
+//        });
+        // TODO sort by name
     }
 
     @NonNull
@@ -78,16 +98,19 @@ public class Favorite implements Cloneable, Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeParcelable(this.mStation, flags);
         dest.writeTypedList(this.mBusLineList);
+        dest.writeInt(this.mIndex);
     }
 
     public void readFromParcel(Parcel source) {
         this.mStation = source.readParcelable(Station.class.getClassLoader());
         this.mBusLineList = source.createTypedArrayList(InComingBusLine.CREATOR);
+        this.mIndex = source.readInt();
     }
 
     protected Favorite(Parcel in) {
         this.mStation = in.readParcelable(Station.class.getClassLoader());
         this.mBusLineList = in.createTypedArrayList(InComingBusLine.CREATOR);
+        this.mIndex = in.readInt();
     }
 
     public static final Creator<Favorite> CREATOR = new Creator<Favorite>() {

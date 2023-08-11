@@ -1,124 +1,186 @@
 package com.vindroid.szbus.helper;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.vindroid.szbus.App;
-import com.vindroid.szbus.model.BusLine;
 import com.vindroid.szbus.model.Favorite;
 import com.vindroid.szbus.model.InComingBusLine;
 import com.vindroid.szbus.model.Station;
 import com.vindroid.szbus.utils.Constants;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 public class FavoriteHelper {
     private static final String TAG;
-    private static final String SP_KEY_INDEX = "index";
-    private static final String SP_KEY_STATIONS = "stations";
-    private static final String SP_KEY_BUS_LINE_HEADER = "bus_line_at_%s";
+
+    private static final String SP_NAME = "favorite_sp";
+    private static final String SP_KEY_DATA = "data";
+
+    private static SharedPreferences mFavoriteSp = null;
 
     static {
         TAG = App.getTag(FavoriteHelper.class.getSimpleName());
     }
 
-    public static LinkedList<Favorite> getAll() {
-        LinkedList<Favorite> favorites = new LinkedList<>();
-        List<Favorite> caches = new ArrayList<>();
-
-        SharedPreferences sp = App.getFavoriteSp();
-        Set<String> stationSet = sp.getStringSet(SP_KEY_STATIONS, new HashSet<>());
-        String[] args;
-        Favorite favorite;
-        Set<String> busLineSet;
-        for (String value : stationSet) {
-            args = value.split(Constants.SPLIT_TEXT);
-            favorite = new Favorite();
-            favorite.setStation(new Station(args[0], args[1]));
-
-            String key = String.format(SP_KEY_BUS_LINE_HEADER, args[0]);
-            busLineSet = sp.getStringSet(key, new HashSet<>());
-            for (String value2 : busLineSet) {
-                args = value2.split(Constants.SPLIT_TEXT);
-                favorite.addBusLine(new InComingBusLine(args[0], args[1]));
-            }
-            caches.add(favorite);
+    private static SharedPreferences getFavoriteSp() {
+        if (mFavoriteSp == null) {
+            mFavoriteSp = App.getContext().getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
         }
+        return mFavoriteSp;
+    }
 
-        // get sort index
-        Set<String> indexSet = sp.getStringSet(SP_KEY_INDEX, new HashSet<>());
-        String[] indexArgs = new String[indexSet.size()];
-        for (String value : indexSet) {
-            args = value.split(Constants.SPLIT_TEXT);
-            String stationId = args[0];
-            int index = Integer.parseInt(args[1]);
-            indexArgs[index] = stationId;
-        }
-
-        // sort by index
-        for (String id : indexArgs) {
-            for (int i = 0; i < caches.size(); i++) {
-                Favorite value = caches.get(i);
-                if (value.getStation().getId().equals(id)) {
-                    favorites.add(value);
+    public static void add(Station station, List<InComingBusLine> busLines) {
+        Log.d(TAG, "[add] station name: " + station.getName() +
+                ", bus line count: " + busLines.size());
+        SharedPreferences sp = getFavoriteSp();
+        String str = sp.getString(SP_KEY_DATA, "[]");
+        try {
+            JSONArray array = new JSONArray(str);
+            int index = -1;
+            for (int i = 0; i < array.length(); i++) {
+                if (array.getJSONObject(i).getJSONObject(Constants.KEY_STATION)
+                        .getString(Constants.KEY_ID).equals(station.getId())) {
+                    index = array.getJSONObject(i).getInt(Constants.KEY_INDEX);
+                    array.remove(i);
+                    break;
                 }
             }
-        }
 
-        return favorites;
-    }
+            JSONObject data = new JSONObject();
+            data.put(Constants.KEY_INDEX, index == -1 ? array.length() : index);
 
-    public static void add(Station station, List<InComingBusLine> busLineList) {
-        Log.d(TAG, "[add] station: " + station.getId() + ", " + station.getName() + ", bus line count: " + busLineList.size());
-        SharedPreferences sp = App.getFavoriteSp();
-        SharedPreferences.Editor editor = sp.edit();
-        Set<String> array, newArray;
+            JSONObject item = new JSONObject();
+            item.put(Constants.KEY_ID, station.getId());
+            item.put(Constants.KEY_NAME, station.getName());
+            data.put(Constants.KEY_STATION, item);
 
-        // update station
-        array = sp.getStringSet(SP_KEY_STATIONS, new HashSet<>());
-        newArray = new HashSet<>();
-        for (String value : array) {
-            if (!value.startsWith(station.getId())) {
-                newArray.add(value);
+            JSONArray items = new JSONArray();
+            for (int i = 0; i < busLines.size(); i++) {
+                item = new JSONObject();
+                item.put(Constants.KEY_ID, busLines.get(i).getId());
+                item.put(Constants.KEY_NAME, busLines.get(i).getName());
+                items.put(item);
             }
-        }
-        newArray.add(station.getId() + Constants.SPLIT_TEXT + station.getName());
-        editor.putStringSet(SP_KEY_STATIONS, newArray);
+            data.put(Constants.KEY_BUS_LINES, items);
 
-        // update bus line, replace all data without retaining existing data
-        newArray = new HashSet<>();
-        for (InComingBusLine value : busLineList) {
-            newArray.add(value.getId() + Constants.SPLIT_TEXT + value.getName());
-        }
-        editor.putStringSet(String.format(SP_KEY_BUS_LINE_HEADER, station.getId()), newArray);
+            array.put(data);
 
-        // update index
-        array = sp.getStringSet(SP_KEY_INDEX, new HashSet<>());
-        newArray = new HashSet<>();
-        int index = array.size();
-        for (String value : array) {
-            if (value.startsWith(station.getId())) {
-                index = Integer.parseInt(value.split(Constants.SPLIT_TEXT)[1]);
-            } else {
-                newArray.add(value);
+            sp.edit().putString(SP_KEY_DATA, array.toString()).apply();
+        } catch (JSONException e) {
+            Log.e(TAG, "[add] has exception", e);
+        }
+    }
+
+    public static List<Favorite> getAll() {
+        List<Favorite> favoriteList = new ArrayList<>();
+        SharedPreferences sp = getFavoriteSp();
+        String str = sp.getString(SP_KEY_DATA, "[]");
+        try {
+            JSONArray array = new JSONArray(str);
+            Favorite[] favorites = new Favorite[array.length()];
+            Favorite favorite;
+            InComingBusLine busLine;
+            JSONObject data, item;
+            JSONArray items;
+            for (int i = 0; i < array.length(); i++) {
+                favorite = new Favorite();
+                data = array.getJSONObject(i);
+
+                favorite.setIndex(data.getInt(Constants.KEY_INDEX));
+
+                item = data.getJSONObject(Constants.KEY_STATION);
+                favorite.setStation(new Station(
+                        item.getString(Constants.KEY_ID), item.getString(Constants.KEY_NAME)));
+
+                items = data.getJSONArray(Constants.KEY_BUS_LINES);
+                for (int j = 0; j < items.length(); j++) {
+                    item = items.getJSONObject(j);
+                    busLine = new InComingBusLine(
+                            item.getString(Constants.KEY_ID), item.getString(Constants.KEY_NAME));
+                    favorite.addBusLine(busLine);
+                }
+                favorite.sortBusLines();
+                favorites[data.getInt(Constants.KEY_INDEX)] = favorite;
             }
+            favoriteList = Arrays.asList(favorites);
+        } catch (JSONException e) {
+            Log.e(TAG, "[getAll] has exception", e);
         }
-        newArray.add(station.getId() + Constants.SPLIT_TEXT + index);
-        editor.putStringSet(SP_KEY_INDEX, newArray);
-
-        editor.apply();
+        return favoriteList;
     }
 
-    public static void delete(Station station, BusLine busLine) {
+    public static void delete(String stationId) {
+        Log.d(TAG, "[delete] station id: " + stationId);
+        SharedPreferences sp = getFavoriteSp();
+        String str = sp.getString(SP_KEY_DATA, "[]");
+        try {
+            JSONArray array = new JSONArray(str);
+            for (int i = 0; i < array.length(); i++) {
+                if (array.getJSONObject(i).getJSONObject(Constants.KEY_STATION)
+                        .getString(Constants.KEY_ID).equals(stationId)) {
+                    array.remove(i);
+                    break;
+                }
+            }
 
+            sp.edit().putString(SP_KEY_DATA, array.toString()).apply();
+        } catch (JSONException e) {
+            Log.e(TAG, "[delete] has exception", e);
+        }
     }
 
-    // type: UP, DOWN
-    public static void setIndex(Station station, String type) {
+    public static void moveUp(String stationId) {
+        Log.d(TAG, "[moveUp] station id: " + stationId);
+        move(stationId, -1);
+    }
 
+    public static void moveDown(String stationId) {
+        Log.d(TAG, "[moveDown] station id: " + stationId);
+        move(stationId, 1);
+    }
+
+    private static void move(String stationId, int moving) {
+        SharedPreferences sp = getFavoriteSp();
+        String str = sp.getString(SP_KEY_DATA, "[]");
+        try {
+            int movedIndex = -1;
+            JSONArray array = new JSONArray(str);
+            for (int i = 0; i < array.length(); i++) {
+                if (array.getJSONObject(i).getJSONObject(Constants.KEY_STATION)
+                        .getString(Constants.KEY_ID).equals(stationId)) {
+                    movedIndex = array.getJSONObject(i).getInt(Constants.KEY_INDEX) + moving;
+                    Log.d(TAG, "test2 i " + movedIndex);
+                    array.getJSONObject(i).put(Constants.KEY_INDEX, movedIndex);
+                    break;
+                }
+            }
+
+            if (movedIndex == -1) {
+                Log.e(TAG, "[move] not found item: " + stationId);
+                return;
+            }
+
+            for (int i = 0; i < array.length(); i++) {
+                String id = array.getJSONObject(i).getJSONObject(Constants.KEY_STATION)
+                        .getString(Constants.KEY_ID);
+                int index = array.getJSONObject(i).getInt(Constants.KEY_INDEX);
+                if (index == movedIndex && !id.equals(stationId)) {
+                    array.getJSONObject(i).put(Constants.KEY_INDEX, index - moving);
+                    break;
+                }
+            }
+
+            sp.edit().putString(SP_KEY_DATA, array.toString()).apply();
+        } catch (JSONException e) {
+            Log.e(TAG, "[move] has exception", e);
+        }
     }
 }

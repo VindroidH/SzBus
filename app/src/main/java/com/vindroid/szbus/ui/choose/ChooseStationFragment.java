@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.vindroid.szbus.AdapterListener;
 import com.vindroid.szbus.App;
 import com.vindroid.szbus.BusCenter;
 import com.vindroid.szbus.R;
@@ -27,7 +28,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
 public class ChooseStationFragment extends Fragment implements SearchView.OnQueryTextListener,
-        BusCenter.SearchListener, SearchStationAdapter.OnClickListener {
+        BusCenter.SearchListener, AdapterListener {
     private static final String TAG;
 
     private FragmentChooseStationBinding mBinding;
@@ -91,12 +92,23 @@ public class ChooseStationFragment extends Fragment implements SearchView.OnQuer
     }
 
     @Override
-    public void onItemClick(Object obj) {
-        StationDetail detail = (StationDetail) obj;
-        Log.d(TAG, "[onItemClick] id: " + detail.getId() + ", name: " + detail.getName());
+    public void onItemClicked(int position, Object obj) {
+        StationDetail detail = null;
+        if (obj instanceof StationDetail) {
+            detail = (StationDetail) obj;
+        }
+        if (detail == null) {
+            Log.w(TAG, "[onItemClicked] unsupported object");
+        }
+        Log.d(TAG, "[onItemClicked] id: " + detail.getId() + ", name: " + detail.getName());
         Bundle bundle = new Bundle();
         bundle.putParcelable(Constants.KEY_DATA, detail);
         NavHostFragment.findNavController(ChooseStationFragment.this)
                 .navigate(R.id.action_FirstFragment_to_SecondFragment, bundle);
+    }
+
+    @Override
+    public void onItemLongClicked(int position, Object obj) {
+        // do nothing
     }
 }

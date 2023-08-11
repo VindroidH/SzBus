@@ -3,6 +3,7 @@ package com.vindroid.szbus.ui.choose;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +31,6 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 
 public class ChooseBusLineFragment extends Fragment implements BusCenter.GetStationListener,
         ChooseActivity.Listener {
-
     private FragmentChooseBusLineBinding mBinding;
     private ChooseBusLineAdapter mAdapter;
 
@@ -93,10 +93,11 @@ public class ChooseBusLineFragment extends Fragment implements BusCenter.GetStat
             for (InComingBusLine item : mAdapter.getSelectedItems()) {
                 SubscribeBusLine busLine = new SubscribeBusLine(item.getId(), item.getName());
                 try {
-                    busLine.setAheadOfStation(Integer.parseInt(
+                    Log.d("WuBus.Test", "aaa " + mAdapter.getExtraValues().get(item.getId()));
+                    busLine.setAhead(Integer.parseInt(
                             Objects.requireNonNull(mAdapter.getExtraValues().get(item.getId()))));
                 } catch (NumberFormatException | NullPointerException e) {
-                    busLine.setAheadOfStation(Constants.DEFAULT_AHEAD);
+                    busLine.setAhead(Constants.DEFAULT_AHEAD);
                 }
                 subscribe.addBusLine(busLine);
             }
@@ -104,7 +105,7 @@ public class ChooseBusLineFragment extends Fragment implements BusCenter.GetStat
             Bundle bundle = new Bundle();
             bundle.putParcelable(Constants.KEY_DATA, subscribe);
             NavHostFragment.findNavController(ChooseBusLineFragment.this)
-                    .navigate(R.id.action_SecondFragment_to_ThirdFragment);
+                    .navigate(R.id.action_SecondFragment_to_ThirdFragment, bundle);
             return true;
         }
         return false;

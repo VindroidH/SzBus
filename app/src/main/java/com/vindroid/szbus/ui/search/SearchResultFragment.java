@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.DividerItemDecoration;
 
 public class SearchResultFragment extends Fragment {
-
     private static final String TAG;
     private static final String ARG_TYPE = "type";
 

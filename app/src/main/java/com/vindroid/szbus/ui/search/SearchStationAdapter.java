@@ -4,10 +4,10 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.vindroid.szbus.App;
-import com.vindroid.szbus.ui.station.StationActivity;
+import com.vindroid.szbus.AdapterListener;
 import com.vindroid.szbus.databinding.ItemSearchStationBinding;
 import com.vindroid.szbus.model.StationDetail;
+import com.vindroid.szbus.ui.station.StationActivity;
 import com.vindroid.szbus.utils.Constants;
 
 import java.util.ArrayList;
@@ -17,24 +17,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class SearchStationAdapter extends RecyclerView.Adapter<SearchStationAdapter.ViewHolder> {
-    private final static String TAG;
-
     private List<StationDetail> mStationList;
-    private OnClickListener mListener;
-
-    static {
-        TAG = App.getTag(SearchStationAdapter.class.getSimpleName());
-    }
-
-    public interface OnClickListener {
-        void onItemClick(Object obj);
-    }
+    private AdapterListener mListener;
 
     public SearchStationAdapter() {
         mStationList = new ArrayList<>();
     }
 
-    public SearchStationAdapter(OnClickListener listener) {
+    public SearchStationAdapter(AdapterListener listener) {
         mStationList = new ArrayList<>();
         mListener = listener;
     }
@@ -70,7 +60,7 @@ public class SearchStationAdapter extends RecyclerView.Adapter<SearchStationAdap
                 intent.putExtra(Constants.KEY_NAME, station.getName());
                 holder.itemView.getContext().startActivity(intent);
             } else {
-                mListener.onItemClick(station);
+                mListener.onItemClicked(position, station);
             }
         });
     }

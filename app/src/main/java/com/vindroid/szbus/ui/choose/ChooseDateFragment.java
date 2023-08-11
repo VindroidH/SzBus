@@ -1,33 +1,30 @@
 package com.vindroid.szbus.ui.choose;
 
-import android.app.TimePickerDialog;
+import android.app.Activity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RadioGroup;
-import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.vindroid.szbus.App;
 import com.vindroid.szbus.R;
 import com.vindroid.szbus.databinding.FragmentChooseDateBinding;
+import com.vindroid.szbus.helper.SubscribeHelper;
 import com.vindroid.szbus.model.Subscribe;
 import com.vindroid.szbus.utils.Constants;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-public class ChooseDateFragment extends Fragment implements View.OnClickListener {
+public class ChooseDateFragment extends Fragment implements ChooseActivity.Listener {
     private static final String TAG;
 
-    private View mRootView;
     private FragmentChooseDateBinding mBinding;
 
-    int mStartTimeHour = 8;
-    int mStartTimeMinute = 0;
-
-    int mEndTimeHour = 8;
-    int mEndTimeMinute = 30;
+    private Subscribe mSubscribe;
 
     static {
         TAG = App.getTag(ChooseDateFragment.class.getSimpleName());
@@ -39,54 +36,84 @@ public class ChooseDateFragment extends Fragment implements View.OnClickListener
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if (mRootView != null) {
-            return mRootView;
-        }
-        mBinding = FragmentChooseDateBinding.inflate(inflater, container, false);
-        mRootView = mBinding.getRoot();
-
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (getArguments() != null) {
-            Subscribe subscribe = getArguments().getParcelable(Constants.KEY_DATA);
-            Log.d(TAG, "[onCreateView] subscribe: " + subscribe);
+            mSubscribe = getArguments().getParcelable(Constants.KEY_DATA);
+            Log.d(TAG, "[onCreateView] subscribe: " + mSubscribe.getStation().getName()
+                    + ", bus line count: " + mSubscribe.getBusLines().size());
         }
 
-        mBinding.selectTime.setOnClickListener(this);
+        Activity activity = requireParentFragment().getActivity();
+        if (activity instanceof ChooseActivity) {
+            ((ChooseActivity) activity).setSubTitle(mSubscribe.getStation().getName());
+            ((ChooseActivity) activity).addListener(this);
+        }
+
+        mBinding = FragmentChooseDateBinding.inflate(inflater, container, false);
+        mBinding.customWeek.setVisibility(mBinding.radioCustomDay.isChecked() ? View.VISIBLE : View.GONE);
         mBinding.dayGroup.setOnCheckedChangeListener((group, checkedId) -> {
-            if (checkedId == R.id.legal_working_day) {
+            if (checkedId == R.id.radio_legal_working_day) {
                 mBinding.customWeek.setVisibility(View.GONE);
             } else {
                 mBinding.customWeek.setVisibility(View.VISIBLE);
             }
         });
 
-        return mRootView;
+        mBinding.sunday.setOnClickListener(v -> mBinding.sunday.toggle());
+        mBinding.monday.setOnClickListener(v -> mBinding.monday.toggle());
+        mBinding.tuesday.setOnClickListener(v -> mBinding.tuesday.toggle());
+        mBinding.wednesday.setOnClickListener(v -> mBinding.wednesday.toggle());
+        mBinding.thursday.setOnClickListener(v -> mBinding.thursday.toggle());
+        mBinding.friday.setOnClickListener(v -> mBinding.friday.toggle());
+        mBinding.saturday.setOnClickListener(v -> mBinding.saturday.toggle());
+
+        return mBinding.getRoot();
     }
 
     @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.select_time) {
-            TimePickerDialog endDialog = new TimePickerDialog(requireContext(), new TimePickerDialog.OnTimeSetListener() {
-                @Override
-                public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                    mStartTimeHour = hourOfDay;
-                    mStartTimeMinute = minute;
-                    mBinding.startTime.setText(requireContext().getString(
-                            R.string.time_hh_mm, String.valueOf(hourOfDay), String.valueOf(minute)));
-                }
-            }, mStartTimeHour, mStartTimeMinute, true);
-            endDialog.setTitle(requireContext().getString(R.string.select_end_time));
+    public void onDestroyView() {
+        super.onDestroyView();
+        mBinding = null;
+    }
 
-            TimePickerDialog startDialog = new TimePickerDialog(requireContext(), (view, hourOfDay, minute) -> {
-                mEndTimeHour = hourOfDay;
-                mEndTimeMinute = minute;
-                mBinding.endTime.setText(requireContext().getString(R.string.time_hh_mm,
-                        String.valueOf(hourOfDay), String.valueOf(minute)));
-                endDialog.show();
-            }, mEndTimeHour, mEndTimeMinute, true);
-            startDialog.setTitle(requireContext().getString(R.string.select_start_time));
+    @Override
+    public boolean onChooseNext() {
+        return false;
+    }
 
-            startDialog.show();
+    @Override
+    public boolean onChooseDone() {
+        String startTime = mBinding.startTime.getText().toString();
+        String endTime = mBinding.endTime.getText().toString();
+        if (TextUtils.isEmpty(startTime) || startTime.split(":").length != 2
+                || TextUtils.isEmpty(endTime) || endTime.split(":").length != 2) {
+            Toast.makeText(requireContext(),
+                    requireContext().getString(R.string.time_format_error),
+                    Toast.LENGTH_LONG).show();
+            return false;
         }
+
+        int bit = 0;
+        if (mBinding.radioCustomDay.isChecked()) {
+            if (mBinding.sunday.isChecked()) bit += 1000000;
+            if (mBinding.monday.isChecked()) bit += 100000;
+            if (mBinding.tuesday.isChecked()) bit += 10000;
+            if (mBinding.wednesday.isChecked()) bit += 1000;
+            if (mBinding.thursday.isChecked()) bit += 100;
+            if (mBinding.friday.isChecked()) bit += 10;
+            if (mBinding.saturday.isChecked()) bit += 1;
+        }
+        if (bit == 0) {
+            Toast.makeText(requireContext(),
+                    requireContext().getString(R.string.at_least_one_day),
+                    Toast.LENGTH_LONG).show();
+            return false;
+        }
+
+        mSubscribe.setWeekBit(bit);
+        mSubscribe.setStartTime(startTime);
+        mSubscribe.setEndTime(endTime);
+        SubscribeHelper.add(mSubscribe);
+        return true;
     }
 }

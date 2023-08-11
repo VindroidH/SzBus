@@ -7,7 +7,6 @@ import java.util.List;
 import androidx.recyclerview.widget.DiffUtil;
 
 public class BusLineListDiffUtil extends DiffUtil.Callback {
-
     private final List<InComingBusLine> mOldList;
     private final List<InComingBusLine> mNewList;
 

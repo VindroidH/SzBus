@@ -76,7 +76,7 @@ public class BusLineActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        if (System.currentTimeMillis() - mUpdateTimeMills >= Constants.MIN_REFRESH_INTERVAL) {
+        if (System.currentTimeMillis() - mUpdateTimeMills >= Constants.REFRESH_MIN_INTERVAL) {
             refreshBusInfo();
         }
     }

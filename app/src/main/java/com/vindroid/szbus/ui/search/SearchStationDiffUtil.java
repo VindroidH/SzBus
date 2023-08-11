@@ -7,7 +7,6 @@ import java.util.List;
 import androidx.recyclerview.widget.DiffUtil;
 
 public class SearchStationDiffUtil extends DiffUtil.Callback {
-
     private final List<StationDetail> mOldList;
     private final List<StationDetail> mNewList;
 

@@ -9,6 +9,11 @@ import com.vindroid.szbus.model.SearchResult;
 import com.vindroid.szbus.model.StationDetail;
 import com.vindroid.szbus.parser.BusParser;
 
+/*
+    test case:
+        山塘街 60232c7e-37f5-4336-aafb-aec49478ff2d
+        406 e82fad29-7847-44c7-971d-9ab98d8f9927
+ */
 public class BusCenter {
     private static final String TAG;
 

@@ -2,6 +2,8 @@ package com.vindroid.szbus.ui.choose;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.vindroid.szbus.App;
@@ -21,11 +23,12 @@ public class ChooseActivity extends AppCompatActivity implements Toolbar.OnMenuI
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityChooseBinding mBinding;
-    private MenuItem mDoneItem;
-    private MenuItem mNextItem;
     private Listener mListener;
 
     private String mChooseType;
+
+    private final int MENU_NEXT_ID = 100;
+    private final int MENU_DONE_ID = 101;
 
     interface Listener {
         boolean onChooseNext();
@@ -45,24 +48,27 @@ public class ChooseActivity extends AppCompatActivity implements Toolbar.OnMenuI
         setContentView(mBinding.getRoot());
 
         mChooseType = getIntent().getStringExtra(Constants.KEY_TYPE);
+        Log.d(TAG, "[onCreate] choose type: " + mChooseType);
 
         setSupportActionBar(mBinding.toolbar);
         NavController navController = Navigation.findNavController(
                 this, R.id.nav_host_fragment_content_choose);
         navController.addOnDestinationChangedListener((controller, destination, bundle) -> {
-            if (destination.getId() == R.id.ChooseStationFragment) {
-                mBinding.toolbar.setSubtitle("");
-            } else if (destination.getId() == R.id.ChooseBusLineFragment) {
+            mBinding.toolbar.getMenu().clear();
+            if (destination.getId() == R.id.ChooseBusLineFragment) {
                 if (Constants.TYPE_SUBSCRIBE.equals(mChooseType)) {
-                    mNextItem = mBinding.toolbar.getMenu().add(getString(R.string.next));
-                    mNextItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+                    mBinding.toolbar.getMenu()
+                            .add(Menu.NONE, MENU_NEXT_ID, Menu.NONE, getString(R.string.next))
+                            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
                 } else {
-                    mDoneItem = mBinding.toolbar.getMenu().add(getString(R.string.done));
-                    mDoneItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+                    mBinding.toolbar.getMenu()
+                            .add(Menu.NONE, MENU_DONE_ID, Menu.NONE, getString(R.string.done))
+                            .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
                 }
             } else if (destination.getId() == R.id.ChooseDateFragment) {
-                mDoneItem = mBinding.toolbar.getMenu().add(getString(R.string.done));
-                mDoneItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
+                mBinding.toolbar.getMenu()
+                        .add(Menu.NONE, MENU_DONE_ID, Menu.NONE, getString(R.string.done))
+                        .setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS);
             }
         });
 
@@ -80,17 +86,16 @@ public class ChooseActivity extends AppCompatActivity implements Toolbar.OnMenuI
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        if (mDoneItem != null && item.getItemId() == mDoneItem.getItemId()) {
+        if (item.getItemId() == MENU_NEXT_ID) {
+            if (mListener != null) {
+                mListener.onChooseNext();
+            }
+        } else if (item.getItemId() == MENU_DONE_ID) {
             if (mListener != null) {
                 if (mListener.onChooseDone()) {
                     setResult(Activity.RESULT_OK);
                     finish();
                 }
-            }
-        }
-        if (mNextItem != null && item.getItemId() == mNextItem.getItemId()) {
-            if (mListener != null) {
-                mListener.onChooseNext();
             }
         }
         return false;

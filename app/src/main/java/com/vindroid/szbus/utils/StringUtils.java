@@ -7,7 +7,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StringUtils {
-
     public static boolean endWith(String str, String... args) {
         if (str != null) {
             for (String arg : args) {

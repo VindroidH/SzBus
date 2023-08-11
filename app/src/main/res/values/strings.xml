@@ -32,6 +32,7 @@
     <string name="station">站台</string>
     <string name="ahead_header">提前</string>
     <string name="ahead_footer">站提醒</string>
+    <string name="ahead_info">提前%1$s站</string>
     <string name="sunday">周日</string>
     <string name="monday">周一</string>
     <string name="tuesday">周二</string>
@@ -53,4 +54,12 @@
     <string name="subscribe">订阅</string>
     <string name="next">下一步</string>
     <string name="done">完成</string>
+    <string name="options">选项</string>
+    <string name="move_up">上移</string>
+    <string name="move_down">下移</string>
+    <string name="delete">删除</string>
+    <string name="favorite_add">添加收藏</string>
+    <string name="subscribe_add">添加订阅</string>
+    <string name="time_format_error">时间格式不正确，应该类似于17:30这种格式</string>
+    <string name="at_least_one_day">至少需要选择一天</string>
 </resources>

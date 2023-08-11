@@ -4,16 +4,15 @@ import com.vindroid.szbus.model.Favorite;
 import com.vindroid.szbus.model.InComingBusLine;
 import com.vindroid.szbus.model.Station;
 
-import java.util.LinkedList;
+import java.util.List;
 
 import androidx.recyclerview.widget.DiffUtil;
 
 public class FavoriteListDiffUtil extends DiffUtil.Callback {
+    private final List<Favorite> mOldList;
+    private final List<Favorite> mNewList;
 
-    private final LinkedList<Favorite> mOldList;
-    private final LinkedList<Favorite> mNewList;
-
-    public FavoriteListDiffUtil(LinkedList<Favorite> oldList, LinkedList<Favorite> newList) {
+    public FavoriteListDiffUtil(List<Favorite> oldList, List<Favorite> newList) {
         mOldList = oldList;
         mNewList = newList;
     }
@@ -40,6 +39,7 @@ public class FavoriteListDiffUtil extends DiffUtil.Callback {
     public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
         Station oldStation = null;
         InComingBusLine oldBusLine = null;
+        int oldIndex = -1;
         int index = 0;
         for (int i = 0; i < mOldList.size(); i++) {
             for (int j = 0; j < mOldList.get(i).getBusLines().size(); j++) {
@@ -47,6 +47,7 @@ public class FavoriteListDiffUtil extends DiffUtil.Callback {
                     oldBusLine = mOldList.get(i).getBusLine(j);
                     if (j == 0) {
                         oldStation = mOldList.get(i).getStation();
+                        oldIndex = mOldList.get(i).getIndex();
                     }
                     break;
                 }
@@ -61,6 +62,7 @@ public class FavoriteListDiffUtil extends DiffUtil.Callback {
 
         Station newStation = null;
         InComingBusLine newBusLine = null;
+        int newIndex = -1;
         index = 0;
         for (int i = 0; i < mNewList.size(); i++) {
             for (int j = 0; j < mNewList.get(i).getBusLines().size(); j++) {
@@ -68,6 +70,7 @@ public class FavoriteListDiffUtil extends DiffUtil.Callback {
                     newBusLine = mNewList.get(i).getBusLine(j);
                     if (j == 0) {
                         newStation = mNewList.get(i).getStation();
+                        newIndex = mNewList.get(i).getIndex();
                     }
                     break;
                 }
@@ -82,7 +85,8 @@ public class FavoriteListDiffUtil extends DiffUtil.Callback {
 
         try {
             return newStation.getId().equals(oldStation.getId())
-                    && newBusLine.getId().equals(oldBusLine.getId());
+                    && newBusLine.getId().equals(oldBusLine.getId())
+                    && newIndex == oldIndex;
         } catch (IndexOutOfBoundsException | NullPointerException ignore) {
         }
         return false;

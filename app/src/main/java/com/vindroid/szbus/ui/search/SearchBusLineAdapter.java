@@ -17,12 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class SearchBusLineAdapter extends RecyclerView.Adapter<SearchBusLineAdapter.ViewHolder> {
-    private final static String TAG;
     private List<BusLine> mBusLineList;
-
-    static {
-        TAG = App.getTag(SearchBusLineAdapter.class.getSimpleName());
-    }
 
     SearchBusLineAdapter() {
         mBusLineList = new ArrayList<>();

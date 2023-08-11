@@ -5,11 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.vindroid.szbus.App;
-import com.vindroid.szbus.ui.station.StationActivity;
 import com.vindroid.szbus.databinding.ListItemStationBinding;
 import com.vindroid.szbus.model.RunningBus;
 import com.vindroid.szbus.model.Station;
+import com.vindroid.szbus.ui.station.StationActivity;
 import com.vindroid.szbus.utils.Constants;
 
 import java.util.ArrayList;
@@ -21,14 +20,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.ViewHolder> {
-    private final static String TAG;
-
     private LinkedList<Station> mStations;
     private List<RunningBus> mRunningBuses;
-
-    static {
-        TAG = App.getTag(StationListAdapter.class.getSimpleName());
-    }
 
     public StationListAdapter() {
         mStations = new LinkedList<>();

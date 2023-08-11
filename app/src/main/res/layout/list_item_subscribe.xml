@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <ViewStub
-        android:id="@+id/header"
+        android:id="@+id/stub_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout="@layout/list_item_subscribe_header" />
+        android:layout="@layout/stub_item_subscribe_header" />
 
     <RelativeLayout
         android:layout_width="match_parent"

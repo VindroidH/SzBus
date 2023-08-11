@@ -15,7 +15,15 @@ public class Constants {
     public static final String KEY_TYPE = "type";
     public static final String KEY_ID = "id";
     public static final String KEY_NAME = "name";
-    public static final String KEY_FROM = "from";
+    public static final String KEY_INDEX = "index";
+    public static final String KEY_STATION = "station";
+    public static final String KEY_BUS_LINES = "bus_lines";
+    public static final String KEY_NOTIFICATION = "notification";
+    public static final String KEY_START_TIME = "start_time";
+    public static final String KEY_END_TIME = "end_time";
+    public static final String KEY_DATE = "date";
+    public static final String KEY_AHEAD = "ahead";
+
     public static final String TYPE_FAVORITE = "favorite";
     public static final String TYPE_SUBSCRIBE = "subscribe";
 
@@ -23,5 +31,6 @@ public class Constants {
     public static final String SUBSCRIBE_TIME_FORMAT = "HH:mm";
 
     public static final int DEFAULT_AHEAD = 3;
-    public static final int MIN_REFRESH_INTERVAL = 60000;
+    public static final int REFRESH_MIN_INTERVAL = 60000; // 60s
+    public static final int DEFAULT_MAX_INDEX = 999;
 }

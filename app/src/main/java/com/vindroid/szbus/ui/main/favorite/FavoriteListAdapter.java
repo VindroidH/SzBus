@@ -1,22 +1,21 @@
 package com.vindroid.szbus.ui.main.favorite;
 
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.vindroid.szbus.AdapterListener;
 import com.vindroid.szbus.App;
 import com.vindroid.szbus.R;
 import com.vindroid.szbus.databinding.ListItemFavoriteBinding;
 import com.vindroid.szbus.model.Favorite;
 import com.vindroid.szbus.model.InComingBusLine;
 import com.vindroid.szbus.model.Station;
-import com.vindroid.szbus.ui.busline.BusLineActivity;
-import com.vindroid.szbus.ui.station.StationActivity;
-import com.vindroid.szbus.utils.Constants;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,19 +23,21 @@ import androidx.recyclerview.widget.RecyclerView;
 public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapter.ViewHolder> {
     private final static String TAG;
 
-    private LinkedList<Favorite> mFavoriteList;
+    private final AdapterListener mListener;
+    private List<Favorite> mFavoriteList;
 
     static {
         TAG = App.getTag(FavoriteListAdapter.class.getSimpleName());
     }
 
-    public FavoriteListAdapter() {
-        mFavoriteList = new LinkedList<>();
+    public FavoriteListAdapter(AdapterListener listener) {
+        mListener = listener;
+        mFavoriteList = new ArrayList<>();
     }
 
-    public void updateData(LinkedList<Favorite> favoriteList) {
+    public void updateData(List<Favorite> favoriteList) {
         try {
-            mFavoriteList = new LinkedList<>();
+            mFavoriteList = new ArrayList<>();
             for (Favorite favorite : favoriteList) {
                 mFavoriteList.add((Favorite) favorite.clone());
             }
@@ -46,7 +47,7 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
         }
     }
 
-    public LinkedList<Favorite> getData() {
+    public List<Favorite> getData() {
         return mFavoriteList;
     }
 
@@ -62,14 +63,15 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Station station = null;
         InComingBusLine busLine = null;
+        boolean isHeader = false;
+
         int index = 0;
         for (int i = 0; i < mFavoriteList.size(); i++) {
             for (int j = 0; j < mFavoriteList.get(i).getBusLines().size(); j++) {
                 if (index == position) {
+                    isHeader = j == 0;
+                    station = mFavoriteList.get(i).getStation();
                     busLine = mFavoriteList.get(i).getBusLine(j);
-                    if (j == 0) {
-                        station = mFavoriteList.get(i).getStation();
-                    }
                     break;
                 }
                 index += 1;
@@ -78,8 +80,10 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
                 break;
             }
         }
+        if (station == null) station = new Station();
         if (busLine == null) busLine = new InComingBusLine();
-        if (station != null) {
+
+        if (isHeader) {
             holder.binding.stationName.setVisibility(View.VISIBLE);
             holder.binding.stationName.setText(station.getName());
         } else {
@@ -100,25 +104,23 @@ public class FavoriteListAdapter extends RecyclerView.Adapter<FavoriteListAdapte
             holder.binding.busLineStatus.setText(String.format(App.getStringById(R.string.coming_still), coming));
         }
 
-        if (station != null) {
-            final Station fStation = station;
+        final Station finalStation = station;
+        final InComingBusLine finalBusLine = busLine;
+        if (isHeader) {
             holder.binding.stationName.setOnClickListener(v -> {
-                Intent intent = new Intent(v.getContext(), StationActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                intent.putExtra(Constants.KEY_ID, fStation.getId());
-                intent.putExtra(Constants.KEY_NAME, fStation.getName());
-                intent.putExtra(Constants.KEY_TYPE, Constants.TYPE_FAVORITE);
-                v.getContext().startActivity(intent);
+                if (mListener != null) mListener.onItemClicked(position, finalStation);
+            });
+            holder.binding.stationName.setOnLongClickListener(v -> {
+                if (mListener != null) mListener.onItemLongClicked(position, finalStation.getId());
+                return false;
             });
         }
-        final InComingBusLine fBusLine = busLine;
         holder.binding.busLineRoot.setOnClickListener(v -> {
-            Intent intent = new Intent(v.getContext(), BusLineActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            intent.putExtra(Constants.KEY_ID, fBusLine.getId());
-            intent.putExtra(Constants.KEY_NAME, fBusLine.getName());
-            intent.putExtra(Constants.KEY_TYPE, Constants.TYPE_FAVORITE);
-            v.getContext().startActivity(intent);
+            if (mListener != null) mListener.onItemClicked(position, finalBusLine);
+        });
+        holder.binding.busLineRoot.setOnLongClickListener(v -> {
+            if (mListener != null) mListener.onItemLongClicked(position, finalStation.getId());
+            return false;
         });
     }
 

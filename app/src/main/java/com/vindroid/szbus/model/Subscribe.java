@@ -15,7 +15,7 @@ public class Subscribe implements Cloneable, Parcelable {
     private Station mStation;
     private String mStartTime;
     private String mEndTime;
-    private int mWeekType; // 0: legal working day, 1: custom
+    private int mWeekBit; // 0000000: sun mon tus wed thu fri sat
     private List<SubscribeBusLine> mBusLines = new ArrayList<>();
 
     public Subscribe() {
@@ -45,6 +45,10 @@ public class Subscribe implements Cloneable, Parcelable {
         this.mEndTime = endTime;
     }
 
+    public List<SubscribeBusLine> getBusLines() {
+        return mBusLines;
+    }
+
     public SubscribeBusLine getBusLine(String id) {
         for (SubscribeBusLine busLine : mBusLines) {
             if (busLine.getId().equals(id)) {
@@ -54,8 +58,24 @@ public class Subscribe implements Cloneable, Parcelable {
         return new SubscribeBusLine();
     }
 
+    public SubscribeBusLine getBusLine(int index) {
+        return mBusLines.get(index);
+    }
+
     public void addBusLine(SubscribeBusLine busLine) {
         mBusLines.add(busLine);
+    }
+
+    public int getWeekBit() {
+        return mWeekBit;
+    }
+
+    public void setWeekBit(int bit) {
+        mWeekBit = bit;
+    }
+
+    public void sortBusLines() {
+        // TODO sort by name
     }
 
     @NonNull
@@ -74,13 +94,13 @@ public class Subscribe implements Cloneable, Parcelable {
         if (!TextUtils.isEmpty(mEndTime)) {
             builder.append(" end time: ").append(mEndTime);
         }
-        builder.append(" week type: ").append(mWeekType);
+        builder.append(" date: ").append(mWeekBit);
         return builder.toString();
     }
 
     @NonNull
     @Override
-    protected Object clone() throws CloneNotSupportedException {
+    public Object clone() throws CloneNotSupportedException {
         Subscribe clone = (Subscribe) super.clone();
         clone.mBusLines = new LinkedList<>();
         for (SubscribeBusLine busLine : mBusLines) {
@@ -99,7 +119,7 @@ public class Subscribe implements Cloneable, Parcelable {
         dest.writeParcelable(this.mStation, flags);
         dest.writeString(this.mStartTime);
         dest.writeString(this.mEndTime);
-        dest.writeInt(this.mWeekType);
+        dest.writeInt(this.mWeekBit);
         dest.writeTypedList(this.mBusLines);
     }
 
@@ -107,7 +127,7 @@ public class Subscribe implements Cloneable, Parcelable {
         this.mStation = source.readParcelable(Station.class.getClassLoader());
         this.mStartTime = source.readString();
         this.mEndTime = source.readString();
-        this.mWeekType = source.readInt();
+        this.mWeekBit = source.readInt();
         this.mBusLines = source.createTypedArrayList(SubscribeBusLine.CREATOR);
     }
 
@@ -115,7 +135,7 @@ public class Subscribe implements Cloneable, Parcelable {
         this.mStation = in.readParcelable(Station.class.getClassLoader());
         this.mStartTime = in.readString();
         this.mEndTime = in.readString();
-        this.mWeekType = in.readInt();
+        this.mWeekBit = in.readInt();
         this.mBusLines = in.createTypedArrayList(SubscribeBusLine.CREATOR);
     }
 

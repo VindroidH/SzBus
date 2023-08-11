@@ -5,7 +5,7 @@ import android.os.Parcel;
 import androidx.annotation.NonNull;
 
 public class SubscribeBusLine extends BusLine {
-    private int mAheadOfStation;
+    private int mAhead;
 
     public SubscribeBusLine() {
         super();
@@ -15,18 +15,18 @@ public class SubscribeBusLine extends BusLine {
         super(id, name);
     }
 
-    public int getAheadOfStation() {
-        return mAheadOfStation;
+    public int getAhead() {
+        return mAhead;
     }
 
-    public void setAheadOfStation(int ahead) {
-        mAheadOfStation = ahead;
+    public void setAhead(int ahead) {
+        mAhead = ahead;
     }
 
     @NonNull
     @Override
     public String toString() {
-        return "[SubscribeBusLine] " + super.toString() + " ahead: " + mAheadOfStation;
+        return "[SubscribeBusLine] " + super.toString() + " ahead: " + mAhead;
     }
 
     @Override
@@ -37,17 +37,17 @@ public class SubscribeBusLine extends BusLine {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         super.writeToParcel(dest, flags);
-        dest.writeInt(this.mAheadOfStation);
+        dest.writeInt(this.mAhead);
     }
 
     public void readFromParcel(Parcel source) {
         super.readFromParcel(source);
-        this.mAheadOfStation = source.readInt();
+        this.mAhead = source.readInt();
     }
 
     protected SubscribeBusLine(Parcel in) {
         super(in);
-        this.mAheadOfStation = in.readInt();
+        this.mAhead = in.readInt();
     }
 
     public static final Creator<SubscribeBusLine> CREATOR = new Creator<SubscribeBusLine>() {
