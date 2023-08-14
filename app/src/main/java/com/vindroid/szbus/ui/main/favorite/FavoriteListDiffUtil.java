@@ -4,6 +4,7 @@ import com.vindroid.szbus.model.Favorite;
 import com.vindroid.szbus.model.InComingBusLine;
 import com.vindroid.szbus.model.Station;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.recyclerview.widget.DiffUtil;
@@ -13,8 +14,8 @@ public class FavoriteListDiffUtil extends DiffUtil.Callback {
     private final List<Favorite> mNewList;
 
     public FavoriteListDiffUtil(List<Favorite> oldList, List<Favorite> newList) {
-        mOldList = oldList;
-        mNewList = newList;
+        mOldList = oldList == null ? new ArrayList<>() : oldList;
+        mNewList = newList == null ? new ArrayList<>() : newList;
     }
 
     @Override
@@ -40,108 +41,82 @@ public class FavoriteListDiffUtil extends DiffUtil.Callback {
         Station oldStation = null;
         InComingBusLine oldBusLine = null;
         int oldIndex = -1;
-        int index = 0;
-        for (int i = 0; i < mOldList.size(); i++) {
-            for (int j = 0; j < mOldList.get(i).getBusLines().size(); j++) {
-                if (index == oldItemPosition) {
+        for (int i = 0, p = 0; i < mOldList.size(); i++) {
+            for (int j = 0; j < mOldList.get(i).getBusLines().size(); j++, p++) {
+                if (p == oldItemPosition) {
                     oldBusLine = mOldList.get(i).getBusLine(j);
-                    if (j == 0) {
-                        oldStation = mOldList.get(i).getStation();
-                        oldIndex = mOldList.get(i).getIndex();
-                    }
+                    oldStation = mOldList.get(i).getStation();
+                    oldIndex = mOldList.get(i).getIndex();
                     break;
                 }
-                index += 1;
             }
             if (oldBusLine != null) {
                 break;
             }
         }
-        if (oldStation == null) oldStation = new Station();
-        if (oldBusLine == null) oldBusLine = new InComingBusLine();
+        if (oldStation == null || oldBusLine == null) return false;
 
         Station newStation = null;
         InComingBusLine newBusLine = null;
         int newIndex = -1;
-        index = 0;
-        for (int i = 0; i < mNewList.size(); i++) {
-            for (int j = 0; j < mNewList.get(i).getBusLines().size(); j++) {
-                if (index == newItemPosition) {
+        for (int i = 0, p = 0; i < mNewList.size(); i++) {
+            for (int j = 0; j < mNewList.get(i).getBusLines().size(); j++, p++) {
+                if (p == newItemPosition) {
                     newBusLine = mNewList.get(i).getBusLine(j);
-                    if (j == 0) {
-                        newStation = mNewList.get(i).getStation();
-                        newIndex = mNewList.get(i).getIndex();
-                    }
+                    newStation = mNewList.get(i).getStation();
+                    newIndex = mNewList.get(i).getIndex();
                     break;
                 }
-                index += 1;
             }
             if (newBusLine != null) {
                 break;
             }
         }
-        if (newStation == null) newStation = new Station();
-        if (newBusLine == null) newBusLine = new InComingBusLine();
+        if (newStation == null || newBusLine == null) return false;
 
-        try {
-            return newStation.getId().equals(oldStation.getId())
-                    && newBusLine.getId().equals(oldBusLine.getId())
-                    && newIndex == oldIndex;
-        } catch (IndexOutOfBoundsException | NullPointerException ignore) {
-        }
-        return false;
+        return newStation.getId().equals(oldStation.getId())
+                && newBusLine.getId().equals(oldBusLine.getId())
+                && newIndex == oldIndex;
     }
 
     @Override
     public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
         Station oldStation = null;
         InComingBusLine oldBusLine = null;
-        int index = 0;
-        for (int i = 0; i < mOldList.size(); i++) {
+        for (int i = 0, position = 0; i < mOldList.size(); i++) {
             for (int j = 0; j < mOldList.get(i).getBusLines().size(); j++) {
-                if (index == oldItemPosition) {
+                if (position == oldItemPosition) {
                     oldBusLine = mOldList.get(i).getBusLine(j);
-                    if (j == 0) {
-                        oldStation = mOldList.get(i).getStation();
-                    }
+                    oldStation = mOldList.get(i).getStation();
                     break;
                 }
-                index += 1;
+                position += 1;
             }
             if (oldBusLine != null) {
                 break;
             }
         }
-        if (oldStation == null) oldStation = new Station();
-        if (oldBusLine == null) oldBusLine = new InComingBusLine();
+        if (oldStation == null || oldBusLine == null) return false;
 
         Station newStation = null;
         InComingBusLine newBusLine = null;
-        index = 0;
-        for (int i = 0; i < mNewList.size(); i++) {
+        for (int i = 0, position = 0; i < mNewList.size(); i++) {
             for (int j = 0; j < mNewList.get(i).getBusLines().size(); j++) {
-                if (index == newItemPosition) {
+                if (position == newItemPosition) {
                     newBusLine = mNewList.get(i).getBusLine(j);
-                    if (j == 0) {
-                        newStation = mNewList.get(i).getStation();
-                    }
+                    newStation = mNewList.get(i).getStation();
                     break;
                 }
-                index += 1;
+                position += 1;
             }
             if (newBusLine != null) {
                 break;
             }
         }
-        if (newStation == null) newStation = new Station();
-        if (newBusLine == null) newBusLine = new InComingBusLine();
+        if (newStation == null || newBusLine == null) return false;
 
-        try {
-            return newStation.getName().equals(oldStation.getName())
-                    && newBusLine.getName().equals(oldBusLine.getName())
-                    && newBusLine.getComing() == oldBusLine.getComing();
-        } catch (IndexOutOfBoundsException | NullPointerException ignore) {
-        }
-        return false;
+        return newStation.getName().equals(oldStation.getName())
+                && newBusLine.getName().equals(oldBusLine.getName())
+                && newBusLine.getComing() == oldBusLine.getComing();
     }
 }

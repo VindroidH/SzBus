@@ -26,9 +26,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DiffUtil;
 
-/**
- * A placeholder fragment containing a simple view.
- */
 public class SubscribeFragment extends Fragment implements AdapterListener {
     private static final String TAG;
 

@@ -55,10 +55,7 @@ public class FavoriteFragment extends Fragment implements View.OnClickListener,
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     loadFavorites();
-                    FavoriteListDiffUtil diffUtil = new FavoriteListDiffUtil(mAdapter.getData(), mFavorites);
-                    DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtil);
-                    mAdapter.updateData(mFavorites);
-                    diffResult.dispatchUpdatesTo(mAdapter);
+                    refreshAll();
                 }
             });
 
@@ -175,10 +172,6 @@ public class FavoriteFragment extends Fragment implements View.OnClickListener,
     @Override
     public void onGetStationCompleted(boolean result, StationDetail station, String msg) {
         syncCount--;
-        mIsRefreshing = false;
-        mUpdateTimeMills = System.currentTimeMillis();
-        stopLoading();
-
         for (Favorite favorite : mFavorites) {
             if (favorite.getStation().getId().equals(station.getId())) {
                 for (InComingBusLine info : station.getBusLines()) {
@@ -189,6 +182,10 @@ public class FavoriteFragment extends Fragment implements View.OnClickListener,
         }
 
         if (syncCount == 0) {
+            mUpdateTimeMills = System.currentTimeMillis();
+            mIsRefreshing = false;
+            stopLoading();
+
             FavoriteListDiffUtil diffUtil = new FavoriteListDiffUtil(mAdapter.getData(), mFavorites);
             DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtil);
             mAdapter.updateData(mFavorites);
