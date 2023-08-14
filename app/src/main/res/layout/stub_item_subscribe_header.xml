@@ -14,7 +14,7 @@
         android:paddingTop="15dp"
         android:paddingEnd="20dp"
         android:paddingBottom="15dp"
-        android:text="苏站路"
+        android:text="@string/test_station_name"
         android:textColor="@color/white"
         android:textStyle="bold" />
 
@@ -37,24 +37,24 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="通知时间段：" />
+                android:text="@string/notification_time" />
 
             <TextView
                 android:id="@+id/notify_time_start"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="15:00" />
+                android:text="@string/notification_start_time" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" ~ " />
+                android:text="@string/notification_time_split" />
 
             <TextView
                 android:id="@+id/notify_time_end"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="16:00" />
+                android:text="@string/notification_end_time" />
         </LinearLayout>
 
         <LinearLayout
@@ -65,13 +65,13 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="通知日期：" />
+                android:text="@string/notification_date" />
 
             <TextView
                 android:id="@+id/notify_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="周一、周二、周三、周四、周五、周六、周日" />
+                android:text="@string/test_notification_date" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

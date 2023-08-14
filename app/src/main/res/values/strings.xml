@@ -6,9 +6,7 @@
     <string name="unavailable">无法获取</string>
     <string name="search">查询</string>
     <string name="search_hint">查找公交、站点</string>
-    <string name="placeholder">占位符</string>
     <string name="locate">位于：</string>
-    <string name="previous">Previous</string>
     <string name="refresh">刷新</string>
     <string name="reverse">反向</string>
     <string name="no_reverse_bus_line">没有反向公交路线</string>
@@ -16,8 +14,8 @@
     <string name="address">地址：</string>
     <string name="start_station">始发站：</string>
     <string name="end_station">终点站：</string>
-    <string name="next_depart_time">下一趟发车时间：</string>
-    <string name="bus_first_time">首班车:</string>
+    <string name="next_depart_time">下一趟：</string>
+    <string name="bus_first_time">首班车：</string>
     <string name="bus_end_time">末班车：</string>
     <string name="to">开往：</string>
     <string name="coming_still">还有%1$s站</string>
@@ -31,7 +29,7 @@
     <string name="bus_line">路线</string>
     <string name="station">站台</string>
     <string name="ahead_header">提前</string>
-    <string name="ahead_footer">站提醒</string>
+    <string name="ahead_footer">站</string>
     <string name="ahead_info">提前%1$s站</string>
     <string name="sunday">周日</string>
     <string name="monday">周一</string>
@@ -62,4 +60,23 @@
     <string name="subscribe_add">添加订阅</string>
     <string name="time_format_error">时间格式不正确，应该类似于17:30这种格式</string>
     <string name="at_least_one_day">至少需要选择一天</string>
+    <string name="default_ahead">3</string>
+    <string name="notification_time">通知时间段：</string>
+    <string name="notification_time_split"> - </string>
+    <string name="notification_start_time">7:30</string>
+    <string name="notification_end_time">8:00</string>
+    <string name="notification_date">通知日期：</string>
+    <string name="test_bus_line_name">622路</string>
+    <string name="test_bus_line_status">还有1站</string>
+    <string name="test_station_name">新庄立交换乘枢纽站</string>
+    <string name="test_station_name2">临湖第一中学</string>
+    <string name="test_station_address"> 姑苏区西环路上客站</string>
+    <string name="test_start_time">05:00</string>
+    <string name="test_end_time">19:00</string>
+    <string name="test_bus_lines">9路、30路、45路、622路、931路、933路</string>
+    <string name="test_update_time">12:34:56</string>
+    <string name="test_station_index">12</string>
+    <string name="test_bus_info">苏U-123456</string>
+    <string name="test_ahead">提前3站</string>
+    <string name="test_notification_date">周一、周二、周三</string>
 </resources>

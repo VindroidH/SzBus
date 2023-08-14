@@ -8,5 +8,6 @@
     android:minWidth="40dp"
     android:minHeight="20dp"
     android:padding="5dp"
-    android:text="@string/placeholder"
+    android:text="@string/test_bus_line_name"
+    android:textColor="@color/white"
     android:textStyle="bold" />

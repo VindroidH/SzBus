@@ -11,7 +11,7 @@
         android:id="@+id/bus_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="1路"
+        android:text="@string/test_bus_line_name"
         android:textStyle="bold" />
 
     <LinearLayout
@@ -23,7 +23,7 @@
             android:id="@+id/bus_from"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="首站" />
+            android:text="@string/test_station_name" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -34,7 +34,7 @@
             android:id="@+id/bus_to"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="末站" />
+            android:text="@string/test_station_name2" />
     </LinearLayout>
 
 </LinearLayout>

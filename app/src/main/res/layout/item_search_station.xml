@@ -11,7 +11,7 @@
         android:id="@+id/station_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/placeholder"
+        android:text="@string/test_station_name"
         android:textStyle="bold" />
 
     <LinearLayout
@@ -28,13 +28,12 @@
             android:id="@+id/station_address"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/placeholder" />
+            android:text="@string/test_station_address" />
     </LinearLayout>
 
     <TextView
         android:id="@+id/station_bus_lines"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/placeholder" />
-
+        android:text="@string/test_bus_lines" />
 </LinearLayout>

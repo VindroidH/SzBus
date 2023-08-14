@@ -34,7 +34,7 @@
             android:layout_gravity="center"
             android:background="@drawable/bg_bus_line_index"
             android:gravity="center"
-            android:text="21"
+            android:text="@string/test_station_index"
             android:textColor="@color/white"
             android:textSize="12sp" />
 
@@ -58,7 +58,7 @@
                 android:id="@+id/station_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="苏站路"
+                android:text="@string/test_station_name"
                 android:textStyle="bold" />
 
             <TextView
@@ -77,7 +77,7 @@
                 android:id="@+id/bus_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="苏U-12345"
+                android:text="@string/test_bus_info"
                 android:textColor="@color/red" />
 
             <TextView
@@ -85,7 +85,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
-                android:text="16:54:31"
+                android:text="@string/test_update_time"
                 android:textColor="@color/red" />
         </LinearLayout>
 
