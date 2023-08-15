@@ -12,6 +12,7 @@ import com.vindroid.szbus.databinding.StubItemSubscribeHeaderBinding;
 import com.vindroid.szbus.model.Station;
 import com.vindroid.szbus.model.Subscribe;
 import com.vindroid.szbus.model.SubscribeBusLine;
+import com.vindroid.szbus.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,7 +61,7 @@ public class SubscribeAdapter extends RecyclerView.Adapter<SubscribeAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Station station = null;
+        Subscribe subscribe = null;
         SubscribeBusLine busLine = null;
         boolean isHeader = false;
 
@@ -69,8 +70,8 @@ public class SubscribeAdapter extends RecyclerView.Adapter<SubscribeAdapter.View
             for (int j = 0; j < mSubscribes.get(i).getBusLines().size(); j++) {
                 if (index == position) {
                     isHeader = j == 0;
-                    station = mSubscribes.get(i).getStation();
-                    busLine = mSubscribes.get(i).getBusLine(j);
+                    subscribe = mSubscribes.get(i);
+                    busLine = subscribe.getBusLine(j);
                     break;
                 }
                 index += 1;
@@ -79,20 +80,46 @@ public class SubscribeAdapter extends RecyclerView.Adapter<SubscribeAdapter.View
                 break;
             }
         }
-        if (station == null) station = new Station();
+        if (subscribe == null) subscribe = new Subscribe();
         if (busLine == null) busLine = new SubscribeBusLine();
 
         if (isHeader) {
             holder.binding.stubHeader.inflate();
             if (holder.headerBinding != null) {
-                holder.headerBinding.stationName.setText(station.getName());
+                holder.headerBinding.stationName.setText(subscribe.getStation().getName());
+                holder.headerBinding.notifyTimeStart.setText(subscribe.getStartTime());
+                holder.headerBinding.notifyTimeEnd.setText(subscribe.getEndTime());
+                String date = "";
+                int bit = Integer.parseInt(String.valueOf(subscribe.getWeekBit()), 2);
+                if ((bit & Constants.SUNDAY_BIT) == Constants.SUNDAY_BIT) {
+                    date += App.getStringById(R.string.sunday);
+                }
+                if ((bit & Constants.MONDAY_BIT) == Constants.MONDAY_BIT) {
+                    date += App.getStringById(R.string.monday) + " ";
+                }
+                if ((bit & Constants.TUESDAY_BIT) == Constants.TUESDAY_BIT) {
+                    date += App.getStringById(R.string.tuesday) + " ";
+                }
+                if ((bit & Constants.WEDNESDAY_BIT) == Constants.WEDNESDAY_BIT) {
+                    date += App.getStringById(R.string.wednesday) + " ";
+                }
+                if ((bit & Constants.THURSDAY_BIT) == Constants.THURSDAY_BIT) {
+                    date += App.getStringById(R.string.thursday) + " ";
+                }
+                if ((bit & Constants.FRIDAY_BIT) == Constants.FRIDAY_BIT) {
+                    date += App.getStringById(R.string.friday) + " ";
+                }
+                if ((bit & Constants.SATURDAY_BIT) == Constants.SATURDAY_BIT) {
+                    date += App.getStringById(R.string.saturday) + " ";
+                }
+                holder.headerBinding.notifyDate.setText(date.trim());
             }
         }
         holder.binding.busLineName.setText(busLine.getName());
         holder.binding.busLineAhead.setText(
                 App.getStringById(R.string.ahead_info, busLine.getAhead()));
 
-        final Station finalStation = station;
+        final Station finalStation = subscribe.getStation();
         holder.itemView.setOnLongClickListener(v -> {
             if (mListener != null) mListener.onItemLongClicked(position, finalStation.getId());
             return false;

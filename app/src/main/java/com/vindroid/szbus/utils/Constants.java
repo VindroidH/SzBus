@@ -33,4 +33,12 @@ public class Constants {
     public static final int DEFAULT_AHEAD = 3;
     public static final int REFRESH_MIN_INTERVAL = 60000; // 60s
     public static final int DEFAULT_MAX_INDEX = 999;
+
+    public static final int SUNDAY_BIT = 0b1000000;
+    public static final int MONDAY_BIT = 0b100000;
+    public static final int TUESDAY_BIT = 0b10000;
+    public static final int WEDNESDAY_BIT = 0b1000;
+    public static final int THURSDAY_BIT = 0b100;
+    public static final int FRIDAY_BIT = 0b10;
+    public static final int SATURDAY_BIT = 0b1;
 }
