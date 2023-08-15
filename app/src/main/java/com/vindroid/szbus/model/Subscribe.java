@@ -75,7 +75,12 @@ public class Subscribe implements Cloneable, Parcelable {
     }
 
     public void sortBusLines() {
-        // TODO sort by name
+        mBusLines.sort((o1, o2) -> {
+            if (o1.getName().length() != o2.getName().length()) {
+                return o1.getName().length() - o2.getName().length();
+            }
+            return o1.getName().compareTo(o2.getName());
+        });
     }
 
     @NonNull
