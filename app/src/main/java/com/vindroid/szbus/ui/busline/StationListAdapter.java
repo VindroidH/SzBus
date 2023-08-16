@@ -60,7 +60,10 @@ public class StationListAdapter extends RecyclerView.Adapter<StationListAdapter.
         holder.binding.stationName.setText(station.getName());
         // TODO edit subway ui style
         if (station.getSubways().size() > 0) {
+            holder.binding.subway.setVisibility(View.VISIBLE);
             holder.binding.subway.setText(Arrays.toString(station.getSubways().toArray()));
+        } else {
+            holder.binding.subway.setVisibility(View.GONE);
         }
 
         RunningBus bus = null;
