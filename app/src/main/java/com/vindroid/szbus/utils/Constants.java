@@ -9,7 +9,6 @@ public class Constants {
     public static final String ADDRESS_HEADER = "位于：";
     public static final String COMING_HEADER = "还有";
     public static final String COMING_FOOTER = "站";
-    public static final String SPLIT_TEXT = "@SzBus@";
 
     public static final String KEY_DATA = "data";
     public static final String KEY_TYPE = "type";
@@ -23,16 +22,21 @@ public class Constants {
     public static final String KEY_END_TIME = "end_time";
     public static final String KEY_DATE = "date";
     public static final String KEY_AHEAD = "ahead";
+    public static final String KEY_NOTIFICATION_ID = "notification_id";
+    public static final String KEY_STATION_ID = "station_id";
 
     public static final String TYPE_FAVORITE = "favorite";
     public static final String TYPE_SUBSCRIBE = "subscribe";
+    public static final String TYPE_STOP_UPDATE= "stop_update";
 
     public static final String UPDATE_TIME_FORMAT = "HH:mm:ss";
     public static final String SUBSCRIBE_TIME_FORMAT = "HH:mm";
 
+    public static final String NOTIFICATION_DEFAULT_ID = "szbus";
+    public static final String NOTIFICATION_SUBSCRIBE_ID = "subscribe";
+
     public static final int DEFAULT_AHEAD = 3;
     public static final int REFRESH_MIN_INTERVAL = 60000; // 60s
-    public static final int DEFAULT_MAX_INDEX = 999;
 
     public static final int SUNDAY_BIT = 0b1000000;
     public static final int MONDAY_BIT = 0b100000;
@@ -41,4 +45,5 @@ public class Constants {
     public static final int THURSDAY_BIT = 0b100;
     public static final int FRIDAY_BIT = 0b10;
     public static final int SATURDAY_BIT = 0b1;
+    public static final int UNKNOWN_BIT = 0b0;
 }

@@ -1,8 +1,12 @@
 package com.vindroid.szbus.ui.main.subscribe;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +17,7 @@ import com.vindroid.szbus.R;
 import com.vindroid.szbus.databinding.FragmentSubscribeBinding;
 import com.vindroid.szbus.helper.SubscribeHelper;
 import com.vindroid.szbus.model.Subscribe;
+import com.vindroid.szbus.service.SubscribeService;
 import com.vindroid.szbus.ui.choose.ChooseActivity;
 import com.vindroid.szbus.ui.main.favorite.FavoriteFragment;
 import com.vindroid.szbus.utils.Constants;
@@ -23,6 +28,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DiffUtil;
 
@@ -40,6 +46,8 @@ public class SubscribeFragment extends Fragment implements AdapterListener {
                 if (result.getResultCode() == Activity.RESULT_OK) {
                     loadSubscribes();
                     refresh();
+
+                    SubscribeService.startAlarm(requireContext());
                 }
             });
 
@@ -54,6 +62,29 @@ public class SubscribeFragment extends Fragment implements AdapterListener {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(requireContext());
+        if (!notificationManager.areNotificationsEnabled()) {
+            try {
+                Intent intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, requireContext().getPackageName());
+                intent.putExtra(Settings.EXTRA_CHANNEL_ID, requireContext().getApplicationInfo().uid);
+                startActivity(intent);
+            } catch (Exception e) {
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", requireContext().getPackageName(), null);
+                intent.setData(uri);
+                startActivity(intent);
+            }
+        }
+
+        AlarmManager alarmManager=(AlarmManager)requireContext().getSystemService(Context.ALARM_SERVICE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            boolean  hasPermission = alarmManager.canScheduleExactAlarms();
+            Uri uri = Uri.parse("package:" + requireContext().getPackageName());
+            Intent i = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, uri);
+            startActivity(i);
+        }
+
         mBinding = FragmentSubscribeBinding.inflate(inflater, container, false);
 
         mAdapter = new SubscribeAdapter(this);

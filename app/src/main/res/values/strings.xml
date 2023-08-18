@@ -66,6 +66,10 @@
     <string name="notification_start_time">7:30</string>
     <string name="notification_end_time">8:00</string>
     <string name="notification_date">通知日期：</string>
+    <string name="notification_title">公交进站提醒</string>
+    <string name="notification_description">定时获取订阅的公交信息</string>
+    <string name="notification_daily">正在获取公交信息</string>
+    <string name="stop_update">停止更新</string>
     <string name="test_bus_line_name">622路</string>
     <string name="test_bus_line_status">还有1站</string>
     <string name="test_station_name">新庄立交换乘枢纽站</string>

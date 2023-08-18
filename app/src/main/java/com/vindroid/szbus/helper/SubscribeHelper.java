@@ -70,7 +70,6 @@ public class SubscribeHelper {
                 item = new JSONObject();
                 item.put(Constants.KEY_ID, subscribe.getBusLine(i).getId());
                 item.put(Constants.KEY_NAME, subscribe.getBusLine(i).getName());
-                Log.d(TAG, "test " + subscribe.getBusLine(i).getName() + ", " + subscribe.getBusLine(i).getAhead());
                 item.put(Constants.KEY_AHEAD, subscribe.getBusLine(i).getAhead());
                 items.put(item);
             }

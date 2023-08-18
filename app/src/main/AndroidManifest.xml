@@ -4,6 +4,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:name=".App"
@@ -16,11 +19,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SzBus"
         tools:targetApi="31">
-        <service
-            android:name=".service.SubscribeService"
-            android:enabled="true"
-            android:exported="true"></service>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.SzBus.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.choose.ChooseActivity"
             android:exported="false"
@@ -41,19 +49,19 @@
             android:label="@string/title_activity_station"
             android:theme="@style/Theme.SzBus.NoActionBar" />
         <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.SzBus.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
             android:name=".ui.search.SearchActivity"
             android:exported="true"
             android:theme="@style/Theme.SzBus.NoActionBar" />
+
+        <receiver
+            android:name=".receiver.BootReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <service
+            android:name=".service.SubscribeService"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

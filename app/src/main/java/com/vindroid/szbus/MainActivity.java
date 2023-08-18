@@ -6,6 +6,7 @@ import android.os.Bundle;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.vindroid.szbus.databinding.ActivityMainBinding;
+import com.vindroid.szbus.service.SubscribeService;
 import com.vindroid.szbus.ui.SectionsPagerAdapter;
 import com.vindroid.szbus.ui.main.favorite.FavoriteFragment;
 import com.vindroid.szbus.ui.main.subscribe.SubscribeFragment;
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
+
+        SubscribeService.startAlarm(this);
     }
 
     private List<Fragment> initFragmentList() {
