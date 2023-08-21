@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.vindroid.szbus.App;
 import com.vindroid.szbus.BusCenter;
@@ -96,6 +97,9 @@ public class StationActivity extends AppCompatActivity implements View.OnClickLi
             mStationDetail = station;
             updateStationStatus();
             updateList();
+        } else {
+            mBinding.stationRoot.updateTime.setText(R.string.update_failed);
+            Toast.makeText(this, R.string.cannot_get_data, Toast.LENGTH_SHORT).show();
         }
         mBinding.loading.hide();
         mBinding.contentRoot.setVisibility(View.VISIBLE);

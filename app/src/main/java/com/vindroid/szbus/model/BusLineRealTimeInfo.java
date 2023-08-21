@@ -11,9 +11,9 @@ import java.util.List;
 import androidx.annotation.NonNull;
 
 public class BusLineRealTimeInfo implements Cloneable, Parcelable {
-    public String mNextDepartTime;
-    public String mNextDepartBus;
-    public List<RunningBus> mRunningBuses = new ArrayList<>();
+    private String mNextDepartTime;
+    private String mNextDepartBus;
+    private List<RunningBus> mRunningBuses = new ArrayList<>();
 
     public BusLineRealTimeInfo() {
     }

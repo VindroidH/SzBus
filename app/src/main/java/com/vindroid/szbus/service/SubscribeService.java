@@ -21,6 +21,7 @@ import com.vindroid.szbus.model.InComingBusLine;
 import com.vindroid.szbus.model.StationDetail;
 import com.vindroid.szbus.model.Subscribe;
 import com.vindroid.szbus.model.SubscribeBusLine;
+import com.vindroid.szbus.ui.station.StationActivity;
 import com.vindroid.szbus.utils.Constants;
 import com.vindroid.szbus.utils.Utils;
 
@@ -152,16 +153,25 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
         if (subscribe != null) {
             List<String> contents = new ArrayList<>();
             for (SubscribeBusLine busLine : subscribe.getBusLines()) {
-                for (InComingBusLine info : station.getBusLines()) {
-                    if (busLine.getId().equals(info.getId())
-                            && 0 <= info.getComing() && info.getComing() <= busLine.getAhead()) {
-                        if (info.getComing() == InComingBusLine.COMING_NOW) {
-                            contents.add(info.getName() + "：" + getString(R.string.coming_now));
-                        } else {
-                            contents.add(info.getName() + "："
-                                    + getString(R.string.coming_still, String.valueOf(info.getComing())));
+                if (result) {
+                    for (InComingBusLine info : station.getBusLines()) {
+                        if (busLine.getId().equals(info.getId())
+                                && 0 <= info.getComing() && info.getComing() <= busLine.getAhead()) {
+                            if (info.getComing() == InComingBusLine.COMING_NOW) {
+                                contents.add(info.getName()
+                                        + getString(R.string.colon)
+                                        + getString(R.string.coming_now));
+                            } else {
+                                contents.add(info.getName()
+                                        + getString(R.string.colon)
+                                        + getString(R.string.coming_still, String.valueOf(info.getComing())));
+                            }
                         }
                     }
+                } else {
+                    contents.add(busLine.getName()
+                            + getString(R.string.colon)
+                            + getString(R.string.coming_err));
                 }
             }
             if (contents.size() > 0) {
@@ -176,20 +186,26 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
         }
     }
 
-    private void showNotification(int id, String title, List<String> contents, String stationId) {
+    private void showNotification(int id, String stationName, List<String> contents, String stationId) {
         NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
-        style.setBigContentTitle(title);
+        style.setBigContentTitle(stationName + " " + Utils.getTime(Constants.UPDATE_TIME_FORMAT));
         for (String content : contents) {
-            Log.d(TAG, "test, add content " + content);
             style.addLine(content);
         }
+
+        int pendingFlags = PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE;
 
         Intent intent = new Intent(SubscribeService.this, SubscribeService.class);
         intent.putExtra(Constants.KEY_TYPE, Constants.TYPE_STOP_UPDATE);
         intent.putExtra(Constants.KEY_STATION_ID, stationId);
         intent.putExtra(Constants.KEY_NOTIFICATION_ID, id);
-        int pendingFlags = PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE;
         PendingIntent actionIntent = PendingIntent.getForegroundService(
+                SubscribeService.this, 0, intent, pendingFlags);
+
+        intent = new Intent(SubscribeService.this, StationActivity.class);
+        intent.putExtra(Constants.KEY_ID, id);
+        intent.putExtra(Constants.KEY_NAME, stationName);
+        PendingIntent contentIntent = PendingIntent.getActivity(
                 SubscribeService.this, 0, intent, pendingFlags);
 
         NotificationCompat.Action action = new NotificationCompat.Action(
@@ -199,10 +215,11 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
                 this, Constants.NOTIFICATION_SUBSCRIBE_ID)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(getString(R.string.app_name))
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setStyle(style)
-                .addAction(action);
+                .addAction(action)
+                .setContentIntent(contentIntent);
 
         NotificationChannel channel = new NotificationChannel(Constants.NOTIFICATION_SUBSCRIBE_ID,
                 getString(R.string.notification_title), NotificationManager.IMPORTANCE_DEFAULT);

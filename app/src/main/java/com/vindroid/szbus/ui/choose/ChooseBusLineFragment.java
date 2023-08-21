@@ -11,9 +11,9 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.vindroid.szbus.BusCenter;
-import com.vindroid.szbus.helper.FavoriteHelper;
 import com.vindroid.szbus.R;
 import com.vindroid.szbus.databinding.FragmentChooseBusLineBinding;
+import com.vindroid.szbus.helper.FavoriteHelper;
 import com.vindroid.szbus.model.InComingBusLine;
 import com.vindroid.szbus.model.StationDetail;
 import com.vindroid.szbus.model.Subscribe;
@@ -70,6 +70,13 @@ public class ChooseBusLineFragment extends Fragment implements BusCenter.GetStat
 
     @Override
     public void onGetStationCompleted(boolean result, StationDetail station, String msg) {
+        if (!result) {
+            mBinding.info.setVisibility(View.VISIBLE);
+            Toast.makeText(requireContext(), R.string.cannot_get_data, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        mBinding.info.setVisibility(View.GONE);
         mStationDetail = station;
         BusLineListDiffUtil diffUtil = new BusLineListDiffUtil(
                 mAdapter.getData(), mStationDetail.getBusLines());

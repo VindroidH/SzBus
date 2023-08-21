@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.vindroid.szbus.AdapterListener;
 import com.vindroid.szbus.App;
@@ -80,14 +81,28 @@ public class ChooseStationFragment extends Fragment implements SearchView.OnQuer
     }
 
     @Override
-    public void onSearchCompleted(SearchResult result) {
-        if (result.getType() != SearchResult.Type.Both && result.getType() != SearchResult.Type.Station) {
-            Log.w(TAG, "[onSearchCompleted] no data");
+    public void onSearchCompleted(boolean result, SearchResult searchResult, String msg) {
+        if (!result) {
+            mBinding.info.setText(R.string.cannot_get_data);
+            mBinding.info.setVisibility(View.VISIBLE);
+            mBinding.list.setVisibility(View.GONE);
+            Toast.makeText(requireContext(), R.string.cannot_get_data, Toast.LENGTH_SHORT).show();
             return;
         }
-        SearchStationDiffUtil diffUtil = new SearchStationDiffUtil(mAdapter.getData(), result.getStations());
+        if (searchResult.getType() != SearchResult.Type.Both
+                && searchResult.getType() != SearchResult.Type.Station) {
+            Log.w(TAG, "[onSearchCompleted] no data");
+            mBinding.info.setText(R.string.no_data);
+            mBinding.info.setVisibility(View.VISIBLE);
+            mBinding.list.setVisibility(View.GONE);
+            return;
+        }
+        mBinding.info.setVisibility(View.GONE);
+        mBinding.list.setVisibility(View.VISIBLE);
+        SearchStationDiffUtil diffUtil = new SearchStationDiffUtil(
+                mAdapter.getData(), searchResult.getStations());
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(diffUtil);
-        mAdapter.updateData(result.getStations());
+        mAdapter.updateData(searchResult.getStations());
         diffResult.dispatchUpdatesTo(mAdapter);
     }
 

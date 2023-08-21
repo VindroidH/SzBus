@@ -45,9 +45,9 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <TextView
-        android:id="@+id/no_data"
+        android:id="@+id/info"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="查询结果不存在"
+        android:text="@string/no_data"
         android:visibility="gone" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

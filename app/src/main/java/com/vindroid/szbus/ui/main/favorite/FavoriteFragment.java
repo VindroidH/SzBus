@@ -174,8 +174,14 @@ public class FavoriteFragment extends Fragment implements View.OnClickListener,
         syncCount--;
         for (Favorite favorite : mFavorites) {
             if (favorite.getStation().getId().equals(station.getId())) {
-                for (InComingBusLine info : station.getBusLines()) {
-                    favorite.getBusLine(info.getId()).setComing(info.getComing());
+                if (result) {
+                    for (InComingBusLine info : station.getBusLines()) {
+                        favorite.getBusLine(info.getId()).setComing(info.getComing());
+                    }
+                } else {
+                    for (InComingBusLine busLine : favorite.getBusLines()) {
+                        busLine.setComing(InComingBusLine.COMING_ERR);
+                    }
                 }
                 break;
             }

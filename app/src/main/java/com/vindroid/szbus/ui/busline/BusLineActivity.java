@@ -123,25 +123,31 @@ public class BusLineActivity extends AppCompatActivity
     public void onGetBusLineCompleted(boolean result, BusLineDetail busLineDetail, String msg) {
         Log.d(TAG, "[onGetBusLineCompleted] result: " + result);
         mIsGetBusLineDone = result;
+        mBinding.contentRoot.setVisibility(View.VISIBLE);
+        mBinding.loading.hide();
         if (result) {
             mBusLineDetail = busLineDetail;
             updateBusLineStatus();
             updateList();
+        } else {
+            mBinding.busLineRoot.updateTime.setText(R.string.update_failed);
+            Toast.makeText(this, R.string.cannot_get_data, Toast.LENGTH_SHORT).show();
         }
-        mBinding.contentRoot.setVisibility(View.VISIBLE);
-        mBinding.loading.hide();
     }
 
     @Override
     public void onGetBusLineRealTimeInfoCompleted(boolean result, BusLineRealTimeInfo info, String msg) {
         mIsRefreshing = false;
-        mUpdateTimeMills = System.currentTimeMillis();
         stopLoading();
         if (result) {
+            mUpdateTimeMills = System.currentTimeMillis();
             mRealTimeInfo = info;
             mBinding.busLineRoot.nextDepartTime.setText(mRealTimeInfo.getNextDepartTime());
             mBinding.busLineRoot.updateTime.setText(Utils.getTime(Constants.UPDATE_TIME_FORMAT));
             updateList();
+        } else {
+            mBinding.busLineRoot.updateTime.setText(R.string.update_failed);
+            Toast.makeText(this, R.string.cannot_get_data, Toast.LENGTH_SHORT).show();
         }
     }
 

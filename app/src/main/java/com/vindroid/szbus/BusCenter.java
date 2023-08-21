@@ -22,7 +22,7 @@ public class BusCenter {
     }
 
     public interface SearchListener {
-        void onSearchCompleted(SearchResult result);
+        void onSearchCompleted(boolean result, SearchResult searchResult, String msg);
     }
 
     public interface GetBusLineListener {
@@ -64,7 +64,7 @@ public class BusCenter {
             super.onPostExecute(result);
             Log.d(TAG, "[SearchTask] result: " + result + ", " + mSearchResult.getType());
             if (mListener != null) {
-                mListener.onSearchCompleted(mSearchResult);
+                mListener.onSearchCompleted(result, mSearchResult, null);
             }
         }
     }

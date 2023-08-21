@@ -21,7 +21,7 @@
     <string name="coming_still">还有%1$s站</string>
     <string name="coming_not">尚未发车</string>
     <string name="coming_now">即将进站</string>
-    <string name="coming_err">无信息</string>
+    <string name="coming_err">信息异常</string>
     <string name="add">添加</string>
     <string name="choose_station">选择站台</string>
     <string name="choose_bus_line">选择路线</string>
@@ -70,6 +70,11 @@
     <string name="notification_description">定时获取订阅的公交信息</string>
     <string name="notification_daily">正在获取公交信息</string>
     <string name="stop_update">停止更新</string>
+    <string name="colon">：</string>
+    <string name="update_failed">更新失败</string>
+    <string name="cannot_get_data">无法获取数据</string>
+    <string name="no_data">没有数据</string>
+
     <string name="test_bus_line_name">622路</string>
     <string name="test_bus_line_status">还有1站</string>
     <string name="test_station_name">新庄立交换乘枢纽站</string>
