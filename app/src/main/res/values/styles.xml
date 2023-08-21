@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="header_station">
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:background">@drawable/bg_bus_line_header</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">20dp</item>
+        <item name="android:paddingEnd">20dp</item>
+        <item name="android:paddingTop">15dp</item>
+        <item name="android:paddingBottom">15dp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="content_bus_line">
+        <item name="android:paddingStart">30dp</item>
+        <item name="android:paddingEnd">30dp</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+    </style>
+
+    <style name="paring_line">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:layout_marginStart">20dp</item>
+        <item name="android:layout_marginEnd">20dp</item>
+        <item name="android:background">@android:color/darker_gray</item>
+    </style>
+
+    <style name="root_padding">
+        <item name="android:paddingStart">@dimen/root_margin_start</item>
+        <item name="android:paddingEnd">@dimen/root_margin_end</item>
+        <item name="android:paddingTop">@dimen/root_margin_top</item>
+        <item name="android:paddingBottom">@dimen/root_margin_bottom</item>
+    </style>
+</resources>

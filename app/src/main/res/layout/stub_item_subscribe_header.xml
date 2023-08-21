@@ -6,17 +6,10 @@
 
     <TextView
         android:id="@+id/station_name"
+        style="@style/header_station"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_bus_line_header"
-        android:gravity="center_vertical"
-        android:paddingStart="20dp"
-        android:paddingTop="15dp"
-        android:paddingEnd="20dp"
-        android:paddingBottom="15dp"
-        android:text="@string/test_station_name"
-        android:textColor="@color/white"
-        android:textStyle="bold" />
+        android:text="@string/test_station_name" />
 
     <LinearLayout
         android:layout_width="match_parent"

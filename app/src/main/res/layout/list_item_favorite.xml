@@ -6,28 +6,16 @@
 
     <TextView
         android:id="@+id/station_name"
+        style="@style/header_station"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/bg_bus_line_header"
-        android:gravity="center_vertical"
-        android:minHeight="50dp"
-        android:paddingStart="20dp"
-        android:paddingTop="15dp"
-        android:paddingEnd="20dp"
-        android:paddingBottom="15dp"
-        android:text="@string/test_station_name"
-        android:textColor="@color/white"
-        android:textStyle="bold" />
+        android:text="@string/test_station_name" />
 
     <RelativeLayout
         android:id="@+id/bus_line_root"
+        style="@style/content_bus_line"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="30dp"
-        android:paddingTop="10dp"
-        android:paddingEnd="30dp"
-        android:paddingBottom="10dp">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/bus_line_name"
@@ -44,10 +32,5 @@
             android:text="@string/test_bus_line_status" />
     </RelativeLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:background="@android:color/darker_gray" />
+    <View style="@style/paring_line" />
 </LinearLayout>

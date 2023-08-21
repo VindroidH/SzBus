@@ -30,9 +30,5 @@
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="@dimen/root_margin_start"
-        android:layout_marginTop="@dimen/root_margin_top"
-        android:layout_marginEnd="@dimen/root_margin_end"
-        android:layout_marginBottom="@dimen/root_margin_bottom"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
