@@ -18,6 +18,7 @@ import com.vindroid.szbus.BusCenter;
 import com.vindroid.szbus.R;
 import com.vindroid.szbus.helper.SubscribeHelper;
 import com.vindroid.szbus.model.InComingBusLine;
+import com.vindroid.szbus.model.Station;
 import com.vindroid.szbus.model.StationDetail;
 import com.vindroid.szbus.model.Subscribe;
 import com.vindroid.szbus.model.SubscribeBusLine;
@@ -175,8 +176,8 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
                 }
             }
             if (contents.size() > 0) {
-                showNotification(mNotificationIds.get(subscribe.getStation().getId()),
-                        subscribe.getStation().getName(), contents, subscribe.getStation().getId());
+                Integer id = mNotificationIds.get(subscribe.getStation().getId());
+                showNotification(id == null ? 100 : id, subscribe.getStation(), contents);
             }
         }
 
@@ -186,9 +187,9 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
         }
     }
 
-    private void showNotification(int id, String stationName, List<String> contents, String stationId) {
+    private void showNotification(int id, Station station, List<String> contents) {
         NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
-        style.setBigContentTitle(stationName + " " + Utils.getTime(Constants.UPDATE_TIME_FORMAT));
+        style.setBigContentTitle(station.getName() + " - " + Utils.getTime(Constants.UPDATE_TIME_FORMAT));
         for (String content : contents) {
             style.addLine(content);
         }
@@ -197,14 +198,14 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
 
         Intent intent = new Intent(SubscribeService.this, SubscribeService.class);
         intent.putExtra(Constants.KEY_TYPE, Constants.TYPE_STOP_UPDATE);
-        intent.putExtra(Constants.KEY_STATION_ID, stationId);
+        intent.putExtra(Constants.KEY_STATION_ID, station.getId());
         intent.putExtra(Constants.KEY_NOTIFICATION_ID, id);
         PendingIntent actionIntent = PendingIntent.getForegroundService(
                 SubscribeService.this, 0, intent, pendingFlags);
 
         intent = new Intent(SubscribeService.this, StationActivity.class);
-        intent.putExtra(Constants.KEY_ID, id);
-        intent.putExtra(Constants.KEY_NAME, stationName);
+        intent.putExtra(Constants.KEY_ID, station.getId());
+        intent.putExtra(Constants.KEY_NAME, station.getName());
         PendingIntent contentIntent = PendingIntent.getActivity(
                 SubscribeService.this, 0, intent, pendingFlags);
 
@@ -228,6 +229,7 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.createNotificationChannel(channel);
+        notificationManager.cancel(id);
         notificationManager.notify(id, builder.build());
     }
 
