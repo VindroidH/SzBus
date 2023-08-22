@@ -2,6 +2,7 @@ package com.vindroid.szbus.ui.main.subscribe;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.vindroid.szbus.AdapterListener;
@@ -84,35 +85,42 @@ public class SubscribeAdapter extends RecyclerView.Adapter<SubscribeAdapter.View
         if (busLine == null) busLine = new SubscribeBusLine();
 
         if (isHeader) {
-            holder.binding.stubHeader.inflate();
+            if (holder.headerBinding == null) {
+                holder.headerBinding = StubItemSubscribeHeaderBinding.bind(
+                        holder.binding.stubHeader.inflate());
+            } else {
+                holder.binding.stubHeader.setVisibility(View.VISIBLE);
+            }
+            holder.headerBinding.stationName.setText(subscribe.getStation().getName());
+            holder.headerBinding.notifyTimeStart.setText(subscribe.getStartTime());
+            holder.headerBinding.notifyTimeEnd.setText(subscribe.getEndTime());
+            String date = "";
+            int bit = Integer.parseInt(String.valueOf(subscribe.getWeekBit()), 2);
+            if ((bit & Constants.SUNDAY_BIT) == Constants.SUNDAY_BIT) {
+                date += App.getStringById(R.string.sunday);
+            }
+            if ((bit & Constants.MONDAY_BIT) == Constants.MONDAY_BIT) {
+                date += App.getStringById(R.string.monday) + " ";
+            }
+            if ((bit & Constants.TUESDAY_BIT) == Constants.TUESDAY_BIT) {
+                date += App.getStringById(R.string.tuesday) + " ";
+            }
+            if ((bit & Constants.WEDNESDAY_BIT) == Constants.WEDNESDAY_BIT) {
+                date += App.getStringById(R.string.wednesday) + " ";
+            }
+            if ((bit & Constants.THURSDAY_BIT) == Constants.THURSDAY_BIT) {
+                date += App.getStringById(R.string.thursday) + " ";
+            }
+            if ((bit & Constants.FRIDAY_BIT) == Constants.FRIDAY_BIT) {
+                date += App.getStringById(R.string.friday) + " ";
+            }
+            if ((bit & Constants.SATURDAY_BIT) == Constants.SATURDAY_BIT) {
+                date += App.getStringById(R.string.saturday) + " ";
+            }
+            holder.headerBinding.notifyDate.setText(date.trim());
+        } else {
             if (holder.headerBinding != null) {
-                holder.headerBinding.stationName.setText(subscribe.getStation().getName());
-                holder.headerBinding.notifyTimeStart.setText(subscribe.getStartTime());
-                holder.headerBinding.notifyTimeEnd.setText(subscribe.getEndTime());
-                String date = "";
-                int bit = Integer.parseInt(String.valueOf(subscribe.getWeekBit()), 2);
-                if ((bit & Constants.SUNDAY_BIT) == Constants.SUNDAY_BIT) {
-                    date += App.getStringById(R.string.sunday);
-                }
-                if ((bit & Constants.MONDAY_BIT) == Constants.MONDAY_BIT) {
-                    date += App.getStringById(R.string.monday) + " ";
-                }
-                if ((bit & Constants.TUESDAY_BIT) == Constants.TUESDAY_BIT) {
-                    date += App.getStringById(R.string.tuesday) + " ";
-                }
-                if ((bit & Constants.WEDNESDAY_BIT) == Constants.WEDNESDAY_BIT) {
-                    date += App.getStringById(R.string.wednesday) + " ";
-                }
-                if ((bit & Constants.THURSDAY_BIT) == Constants.THURSDAY_BIT) {
-                    date += App.getStringById(R.string.thursday) + " ";
-                }
-                if ((bit & Constants.FRIDAY_BIT) == Constants.FRIDAY_BIT) {
-                    date += App.getStringById(R.string.friday) + " ";
-                }
-                if ((bit & Constants.SATURDAY_BIT) == Constants.SATURDAY_BIT) {
-                    date += App.getStringById(R.string.saturday) + " ";
-                }
-                holder.headerBinding.notifyDate.setText(date.trim());
+                holder.binding.stubHeader.setVisibility(View.GONE);
             }
         }
         holder.binding.busLineName.setText(busLine.getName());
@@ -142,9 +150,6 @@ public class SubscribeAdapter extends RecyclerView.Adapter<SubscribeAdapter.View
         public ViewHolder(ListItemSubscribeBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
-
-            this.binding.stubHeader.setOnInflateListener((stub, inflated) ->
-                    headerBinding = StubItemSubscribeHeaderBinding.bind(inflated));
         }
     }
 }
