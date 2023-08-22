@@ -11,6 +11,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 
 import com.vindroid.szbus.App;
@@ -32,17 +34,33 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 public class SubscribeService extends Service implements BusCenter.GetStationListener {
 
     private final static String TAG;
+
+    private NotificationManager mManager;
+
     private List<Subscribe> mSubscribes;
     private final List<String> mStopUpdateStationIds = new ArrayList<>();
     private final Map<String, Integer> mNotificationIds = new HashMap<>();
+    private final Map<String, String> mNotificationContents = new HashMap<>();
     private int mRefreshCount = 0;
+
+    private final Handler mHandler = new Handler(Looper.myLooper()) {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == 0) {
+                refreshData();
+            }
+        }
+    };
 
     static {
         TAG = App.getTag(SubscribeService.class.getSimpleName());
@@ -56,31 +74,56 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
     @Override
     public void onCreate() {
         super.onCreate();
+        mManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         runningAsForegroundService();
         mSubscribes = SubscribeHelper.getAll();
         int id = 100;
         for (Subscribe subscribe : mSubscribes) {
             mNotificationIds.put(subscribe.getStation().getId(), id++);
         }
-        refreshData(0);
+        mHandler.sendEmptyMessage(0);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "[onStartCommand] start");
-        if (intent.hasExtra(Constants.KEY_TYPE)
-                && Constants.TYPE_STOP_UPDATE.equals(intent.getStringExtra(Constants.KEY_TYPE))) {
-            mStopUpdateStationIds.add(intent.getStringExtra(Constants.KEY_STATION_ID));
-            NotificationManager manager =
-                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            manager.cancel(intent.getIntExtra(Constants.KEY_NOTIFICATION_ID, 100));
-            if (mStopUpdateStationIds.size() == mSubscribes.size()) {
-                Log.d(TAG, "ignore all, start next alarm & stop self");
-                startAlarm(SubscribeService.this);
-                stopSelf();
-            }
+        Log.d(TAG, "[onStartCommand] start, type: " + intent.getStringExtra(Constants.KEY_TYPE));
+        if (Constants.TYPE_STOP_UPDATE.equals(intent.getStringExtra(Constants.KEY_TYPE))) {
+            stopUpdate(intent);
         }
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void stopUpdate(Intent intent) {
+        int notificationId = intent.getIntExtra(Constants.KEY_NOTIFICATION_ID, 100);
+        String stationId = intent.getStringExtra(Constants.KEY_STATION_ID);
+        if (!mStopUpdateStationIds.contains(stationId)) {
+            mStopUpdateStationIds.add(stationId);
+        }
+        mManager.cancel(notificationId);
+
+        int count = 0;
+        int todayWeekBit = Utils.getDayOfWeek(new Date());
+        String[] args = Utils.getTime(Constants.SUBSCRIBE_TIME_FORMAT).split(":");
+        int todayTime = Integer.parseInt(args[0]) * 60 + Integer.parseInt(args[1]);
+        for (Subscribe subscribe : mSubscribes) {
+            if (mStopUpdateStationIds.contains(subscribe.getStation().getId())) continue;
+            int weekBit = Integer.parseInt(String.valueOf(subscribe.getWeekBit()), 2);
+            args = subscribe.getStartTime().split(":");
+            int startTime = Integer.parseInt(args[0]) * 60 + Integer.parseInt(args[1]);
+            args = subscribe.getEndTime().split(":");
+            int endTime = Integer.parseInt(args[0]) * 60 + Integer.parseInt(args[1]);
+
+            if ((weekBit & todayWeekBit) == todayWeekBit
+                    && startTime <= todayTime && todayTime <= endTime) {
+                count++;
+            }
+        }
+        if (count == 0) {
+            Log.d(TAG, "ignore all, start next alarm & stop self");
+            mHandler.removeMessages(0);
+            startAlarm(SubscribeService.this);
+            stopSelf();
+        }
     }
 
     private void runningAsForegroundService() {
@@ -89,8 +132,7 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
                 getString(R.string.app_name),
                 NotificationManager.IMPORTANCE_NONE);
 
-        ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE))
-                .createNotificationChannel(channel);
+        mManager.createNotificationChannel(channel);
 
         Notification notification = new NotificationCompat.Builder(
                 this, Constants.NOTIFICATION_DEFAULT_ID)
@@ -106,38 +148,34 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
         task.execute(stationId);
     }
 
-    private void refreshData(long delayMillis) {
-        new Handler().postDelayed(() -> {
-            Log.d(TAG, "[refreshData]");
-            mRefreshCount = 0;
-            int findCount = 0;
-            int todayWeekBit = Utils.getDayOfWeek(new Date());
-            String[] args = Utils.getTime(Constants.SUBSCRIBE_TIME_FORMAT).split(":");
-            int todayTime = Integer.parseInt(args[0]) * 60 + Integer.parseInt(args[1]);
-            for (Subscribe subscribe : mSubscribes) {
-                if (mStopUpdateStationIds.contains(subscribe.getStation().getId())) {
-                    continue;
-                }
+    private void refreshData() {
+        Log.d(TAG, "[refreshData]");
+        mRefreshCount = 0;
+        int count = 0;
+        int todayWeekBit = Utils.getDayOfWeek(new Date());
+        String[] args = Utils.getTime(Constants.SUBSCRIBE_TIME_FORMAT).split(":");
+        int todayTime = Integer.parseInt(args[0]) * 60 + Integer.parseInt(args[1]);
+        for (Subscribe subscribe : mSubscribes) {
+            if (mStopUpdateStationIds.contains(subscribe.getStation().getId())) continue;
 
-                int weekBit = Integer.parseInt(String.valueOf(subscribe.getWeekBit()), 2);
-                args = subscribe.getStartTime().split(":");
-                int startTime = Integer.parseInt(args[0]) * 60 + Integer.parseInt(args[1]);
-                args = subscribe.getEndTime().split(":");
-                int endTime = Integer.parseInt(args[0]) * 60 + Integer.parseInt(args[1]);
+            int weekBit = Integer.parseInt(String.valueOf(subscribe.getWeekBit()), 2);
+            args = subscribe.getStartTime().split(":");
+            int startTime = Integer.parseInt(args[0]) * 60 + Integer.parseInt(args[1]);
+            args = subscribe.getEndTime().split(":");
+            int endTime = Integer.parseInt(args[0]) * 60 + Integer.parseInt(args[1]);
 
-                if ((weekBit & todayWeekBit) == todayWeekBit
-                        && startTime <= todayTime && todayTime <= endTime) {
-                    mRefreshCount++;
-                    findCount++;
-                    getInfoByStation(subscribe.getStation().getId());
-                }
+            if ((weekBit & todayWeekBit) == todayWeekBit
+                    && startTime <= todayTime && todayTime <= endTime) {
+                mRefreshCount++;
+                count++;
+                getInfoByStation(subscribe.getStation().getId());
             }
-            if (findCount == 0) {
-                Log.d(TAG, "there are no eligible subscriptions, start next alarm & stop self");
-                startAlarm(SubscribeService.this);
-                SubscribeService.this.stopSelf();
-            }
-        }, delayMillis);
+        }
+        if (count == 0) {
+            Log.d(TAG, "there are no eligible subscriptions, start next alarm & stop self");
+            startAlarm(SubscribeService.this);
+            SubscribeService.this.stopSelf();
+        }
     }
 
     @Override
@@ -183,16 +221,23 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
 
         if (mRefreshCount == 0) {
             Log.d(TAG, "all refreshed, refresh again in " + Constants.REFRESH_MIN_INTERVAL + "ms");
-            refreshData(Constants.REFRESH_MIN_INTERVAL);
+            mHandler.sendEmptyMessageDelayed(0, Constants.REFRESH_MIN_INTERVAL);
         }
     }
 
     private void showNotification(int id, Station station, List<String> contents) {
+        StringBuilder str = new StringBuilder();
         NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
         style.setBigContentTitle(station.getName() + " - " + Utils.getTime(Constants.UPDATE_TIME_FORMAT));
         for (String content : contents) {
+            str.append(content);
             style.addLine(content);
         }
+
+        if (Objects.equals(str.toString(), mNotificationContents.get(station.getId()))) {
+            return;
+        }
+        mNotificationContents.put(station.getId(), str.toString());
 
         int pendingFlags = PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE;
 
@@ -226,11 +271,8 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
                 getString(R.string.notification_title), NotificationManager.IMPORTANCE_DEFAULT);
         channel.setDescription(getString(R.string.notification_description));
 
-        NotificationManager notificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.createNotificationChannel(channel);
-        notificationManager.cancel(id);
-        notificationManager.notify(id, builder.build());
+        mManager.createNotificationChannel(channel);
+        mManager.notify(id, builder.build());
     }
 
     public static void startAlarm(Context context) {
@@ -258,6 +300,7 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
             if (millis <= System.currentTimeMillis()) millis += 24 * 3600 * 1000;
             if (triggerTime == -1 || millis < triggerTime) triggerTime = millis;
         }
+        triggerTime = triggerTime / 1000 * 1000;
 
         Intent intent = new Intent(context, SubscribeService.class);
         int pendingFlags = PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE;
