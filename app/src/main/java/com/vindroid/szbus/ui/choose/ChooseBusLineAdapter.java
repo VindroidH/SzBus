@@ -1,5 +1,6 @@
 package com.vindroid.szbus.ui.choose;
 
+import android.content.Intent;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -10,6 +11,7 @@ import com.vindroid.szbus.databinding.ListItemBusLineBinding;
 import com.vindroid.szbus.databinding.StubItemAheadBinding;
 import com.vindroid.szbus.databinding.StubItemCheckboxBinding;
 import com.vindroid.szbus.model.InComingBusLine;
+import com.vindroid.szbus.ui.busline.BusLineActivity;
 import com.vindroid.szbus.utils.Constants;
 
 import java.util.ArrayList;
@@ -64,6 +66,13 @@ public class ChooseBusLineAdapter extends RecyclerView.Adapter<ChooseBusLineAdap
         holder.binding.busLineName.setText(info.getName());
         holder.binding.busLineTo.setText(info.getEndStationName());
 
+        holder.binding.busLineRoot.setOnClickListener(v -> {
+            Intent intent = new Intent(holder.itemView.getContext(), BusLineActivity.class);
+            intent.putExtra(Constants.KEY_ID, info.getId());
+            intent.putExtra(Constants.KEY_NAME, info.getName());
+            holder.itemView.getContext().startActivity(intent);
+        });
+
         if (holder.checkboxBinding != null) {
             holder.checkboxBinding.checkbox.setChecked(mSelectedItems.containsKey(info.getId()));
             holder.checkboxBinding.checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -81,8 +90,6 @@ public class ChooseBusLineAdapter extends RecyclerView.Adapter<ChooseBusLineAdap
                     }
                 }
             });
-            holder.itemView.setOnClickListener(v -> holder.checkboxBinding.checkbox.setChecked(
-                    !holder.checkboxBinding.checkbox.isChecked()));
         }
 
         if (holder.aheadBinding != null) {
