@@ -27,7 +27,8 @@ public class Constants {
 
     public static final String TYPE_FAVORITE = "favorite";
     public static final String TYPE_SUBSCRIBE = "subscribe";
-    public static final String TYPE_STOP_UPDATE= "stop_update";
+    public static final String TYPE_STOP_UPDATE = "stop_update";
+    public static final String TYPE_START_UPDATE = "start_update";
 
     public static final String UPDATE_TIME_FORMAT = "HH:mm:ss";
     public static final String SUBSCRIBE_TIME_FORMAT = "HH:mm";

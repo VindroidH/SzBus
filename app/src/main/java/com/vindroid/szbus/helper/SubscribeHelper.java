@@ -1,6 +1,7 @@
 package com.vindroid.szbus.helper;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
@@ -19,6 +20,8 @@ import java.util.List;
 
 public class SubscribeHelper {
     private static final String TAG;
+
+    public static final String ACTION_SUBSCRIBE_CHANGED = "com.vindroid.szbus.SUBSCRIBE_CHANGED";
 
     private static final String SP_NAME = "subscribe_sp";
     private static final String SP_KEY_DATA = "data";
@@ -81,6 +84,7 @@ public class SubscribeHelper {
         } catch (JSONException e) {
             Log.e(TAG, "[add] has exception", e);
         }
+        notifyChanged();
     }
 
     public static List<Subscribe> getAll() {
@@ -140,5 +144,11 @@ public class SubscribeHelper {
         } catch (JSONException e) {
             Log.e(TAG, "[delete] has exception", e);
         }
+        notifyChanged();
+    }
+
+    public static void notifyChanged() {
+        Intent intent = new Intent(ACTION_SUBSCRIBE_CHANGED);
+        App.getContext().sendBroadcast(intent);
     }
 }

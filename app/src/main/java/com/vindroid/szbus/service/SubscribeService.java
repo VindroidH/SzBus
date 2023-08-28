@@ -6,13 +6,16 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.vindroid.szbus.App;
@@ -41,7 +44,6 @@ import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
 public class SubscribeService extends Service implements BusCenter.GetStationListener {
-
     private final static String TAG;
 
     private NotificationManager mManager;
@@ -49,15 +51,31 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
     private List<Subscribe> mSubscribes;
     private final List<String> mStopUpdateStationIds = new ArrayList<>();
     private final Map<String, Integer> mNotificationIds = new HashMap<>();
-    private final Map<String, String> mNotificationContents = new HashMap<>();
+    private final Map<String, String> mStationInfoMap = new HashMap<>();
     private int mRefreshCount = 0;
 
+    private final int WHAT_REFRESH = 0;
     private final Handler mHandler = new Handler(Looper.myLooper()) {
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            if (msg.what == 0) {
+            if (msg.what == WHAT_REFRESH) {
                 refreshData();
+            }
+        }
+    };
+
+    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (SubscribeHelper.ACTION_SUBSCRIBE_CHANGED.equals(intent.getAction())) {
+                Log.d(TAG, "[onReceive] subscribe data changed");
+                mHandler.removeMessages(WHAT_REFRESH);
+                mSubscribes.clear();
+                mStationInfoMap.clear();
+                mNotificationIds.clear();
+                mStopUpdateStationIds.clear();
+                readyGo();
             }
         }
     };
@@ -76,21 +94,36 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
         super.onCreate();
         mManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         runningAsForegroundService();
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(SubscribeHelper.ACTION_SUBSCRIBE_CHANGED);
+        registerReceiver(mReceiver, filter);
+
+        readyGo();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "[onStartCommand] type: " + intent.getStringExtra(Constants.KEY_TYPE));
+        if (Constants.TYPE_STOP_UPDATE.equals(intent.getStringExtra(Constants.KEY_TYPE))) {
+            stopUpdate(intent);
+        }
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mReceiver);
+    }
+
+    private void readyGo() {
         mSubscribes = SubscribeHelper.getAll();
         int id = 100;
         for (Subscribe subscribe : mSubscribes) {
             mNotificationIds.put(subscribe.getStation().getId(), id++);
         }
-        mHandler.sendEmptyMessage(0);
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(TAG, "[onStartCommand] start, type: " + intent.getStringExtra(Constants.KEY_TYPE));
-        if (Constants.TYPE_STOP_UPDATE.equals(intent.getStringExtra(Constants.KEY_TYPE))) {
-            stopUpdate(intent);
-        }
-        return super.onStartCommand(intent, flags, startId);
+        mHandler.sendEmptyMessage(WHAT_REFRESH);
     }
 
     private void stopUpdate(Intent intent) {
@@ -100,6 +133,8 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
             mStopUpdateStationIds.add(stationId);
         }
         mManager.cancel(notificationId);
+
+        mStationInfoMap.remove(stationId);
 
         int count = 0;
         int todayWeekBit = Utils.getDayOfWeek(new Date());
@@ -119,8 +154,8 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
             }
         }
         if (count == 0) {
-            Log.d(TAG, "ignore all, start next alarm & stop self");
-            mHandler.removeMessages(0);
+            Log.d(TAG, "[stopUpdate] nothing to update, turn on the next alarm");
+            mHandler.removeMessages(WHAT_REFRESH);
             startAlarm(SubscribeService.this);
             stopSelf();
         }
@@ -130,14 +165,14 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
         NotificationChannel channel = new NotificationChannel(
                 Constants.NOTIFICATION_DEFAULT_ID,
                 getString(R.string.app_name),
-                NotificationManager.IMPORTANCE_NONE);
-
+                NotificationManager.IMPORTANCE_DEFAULT);
         mManager.createNotificationChannel(channel);
 
         Notification notification = new NotificationCompat.Builder(
                 this, Constants.NOTIFICATION_DEFAULT_ID)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentTitle(getString(R.string.notification_daily))
+                .setGroup(Constants.NOTIFICATION_DEFAULT_ID)
                 .build();
 
         startForeground(1000, notification);
@@ -172,7 +207,7 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
             }
         }
         if (count == 0) {
-            Log.d(TAG, "there are no eligible subscriptions, start next alarm & stop self");
+            Log.d(TAG, "[refreshData] nothing to update, turn on the next alarm");
             startAlarm(SubscribeService.this);
             SubscribeService.this.stopSelf();
         }
@@ -190,20 +225,23 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
             }
         }
         if (subscribe != null) {
+            int nearest = InComingBusLine.COMING_NO;
+            String summary = "";
             List<String> contents = new ArrayList<>();
             for (SubscribeBusLine busLine : subscribe.getBusLines()) {
-                if (result) {
+                if (!result) {
                     for (InComingBusLine info : station.getBusLines()) {
                         if (busLine.getId().equals(info.getId())
                                 && 0 <= info.getComing() && info.getComing() <= busLine.getAhead()) {
+                            String str = info.getName() + getString(R.string.colon);
                             if (info.getComing() == InComingBusLine.COMING_NOW) {
-                                contents.add(info.getName()
-                                        + getString(R.string.colon)
-                                        + getString(R.string.coming_now));
+                                str += getString(R.string.coming_now);
                             } else {
-                                contents.add(info.getName()
-                                        + getString(R.string.colon)
-                                        + getString(R.string.coming_still, String.valueOf(info.getComing())));
+                                str += getString(R.string.coming_still, String.valueOf(info.getComing()));
+                            }
+                            contents.add(str);
+                            if (info.getComing() < nearest) {
+                                summary = str;
                             }
                         }
                     }
@@ -215,29 +253,33 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
             }
             if (contents.size() > 0) {
                 Integer id = mNotificationIds.get(subscribe.getStation().getId());
-                showNotification(id == null ? 100 : id, subscribe.getStation(), contents);
+                showNotification(id == null ? 100 : id, subscribe.getStation(), contents, summary);
             }
         }
 
         if (mRefreshCount == 0) {
-            Log.d(TAG, "all refreshed, refresh again in " + Constants.REFRESH_MIN_INTERVAL + "ms");
-            mHandler.sendEmptyMessageDelayed(0, Constants.REFRESH_MIN_INTERVAL);
+            Log.d(TAG, "[onGetStationCompleted] all refreshed");
+            mHandler.sendEmptyMessageDelayed(WHAT_REFRESH, Constants.REFRESH_MIN_INTERVAL);
         }
     }
 
-    private void showNotification(int id, Station station, List<String> contents) {
+    private void showNotification(int id, Station station, List<String> contents, String summary) {
         StringBuilder str = new StringBuilder();
         NotificationCompat.InboxStyle style = new NotificationCompat.InboxStyle();
         style.setBigContentTitle(station.getName() + " - " + Utils.getTime(Constants.UPDATE_TIME_FORMAT));
+        if (!TextUtils.isEmpty(summary)) {
+            style.setSummaryText(summary);
+        }
         for (String content : contents) {
             str.append(content);
             style.addLine(content);
         }
 
-        if (Objects.equals(str.toString(), mNotificationContents.get(station.getId()))) {
+        if (Objects.equals(str.toString(), mStationInfoMap.get(station.getId()))) {
+            Log.d(TAG, "[showNotification] station info has not changed");
             return;
         }
-        mNotificationContents.put(station.getId(), str.toString());
+        mStationInfoMap.put(station.getId(), str.toString());
 
         int pendingFlags = PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE;
 
@@ -263,21 +305,26 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
                 .setContentTitle(getString(R.string.app_name))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setGroup(Constants.NOTIFICATION_SUBSCRIBE_ID)
+                .setGroupSummary(false)
+                .setAutoCancel(true)
                 .setStyle(style)
                 .addAction(action)
-                .setContentIntent(contentIntent);
+                .setContentIntent(contentIntent)
+                .setFullScreenIntent(contentIntent, true);
 
         NotificationChannel channel = new NotificationChannel(Constants.NOTIFICATION_SUBSCRIBE_ID,
-                getString(R.string.notification_title), NotificationManager.IMPORTANCE_DEFAULT);
+                getString(R.string.notification_title), NotificationManager.IMPORTANCE_HIGH);
         channel.setDescription(getString(R.string.notification_description));
 
         mManager.createNotificationChannel(channel);
+        mManager.cancel(id);
         mManager.notify(id, builder.build());
     }
 
     public static void startAlarm(Context context) {
         if (!NotificationManagerCompat.from(context).areNotificationsEnabled()) {
-            Log.w(TAG, "[startAlarm] no notification permission, stop process");
+            Log.w(TAG, "[startAlarm] no notification permission");
             return;
         }
 
@@ -303,6 +350,7 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
         triggerTime = triggerTime / 1000 * 1000;
 
         Intent intent = new Intent(context, SubscribeService.class);
+        intent.putExtra(Constants.KEY_TYPE, Constants.TYPE_START_UPDATE);
         int pendingFlags = PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_IMMUTABLE;
         PendingIntent sender = PendingIntent.getForegroundService(context, 0, intent, pendingFlags);
 
