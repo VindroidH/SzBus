@@ -21,7 +21,7 @@
     <string name="coming_still">还有%1$s站</string>
     <string name="coming_not">尚未发车</string>
     <string name="coming_now">即将进站</string>
-    <string name="coming_err">信息异常</string>
+    <string name="coming_err">失联</string>
     <string name="add">添加</string>
     <string name="choose_station">选择站台</string>
     <string name="choose_bus_line">选择路线</string>
