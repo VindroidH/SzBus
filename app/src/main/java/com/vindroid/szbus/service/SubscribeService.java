@@ -229,10 +229,12 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
             String summary = "";
             List<String> contents = new ArrayList<>();
             for (SubscribeBusLine busLine : subscribe.getBusLines()) {
-                if (!result) {
+                if (result) {
                     for (InComingBusLine info : station.getBusLines()) {
                         if (busLine.getId().equals(info.getId())
-                                && 0 <= info.getComing() && info.getComing() <= busLine.getAhead()) {
+                                && info.getComing() >= InComingBusLine.COMING_NOW
+                                && info.getComing() <= busLine.getAhead()) {
+                            Log.d(TAG, "[onGetStationCompleted] " + busLine.getName() + ", " + info.getComing());
                             String str = info.getName() + getString(R.string.colon);
                             if (info.getComing() == InComingBusLine.COMING_NOW) {
                                 str += getString(R.string.coming_now);
@@ -241,6 +243,7 @@ public class SubscribeService extends Service implements BusCenter.GetStationLis
                             }
                             contents.add(str);
                             if (info.getComing() < nearest) {
+                                nearest = info.getComing();
                                 summary = str;
                             }
                         }
