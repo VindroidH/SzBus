@@ -72,11 +72,17 @@ public class BusParser {
             List<Node> lineNodes = node.list("div.stationline > div.stationinfo > div");
             InComingBusLine busLine;
             for (Node lineNode : lineNodes) {
-                busLine = new InComingBusLine();
-                busLine.setName(lineNode.text());
-                station.addBusLine(busLine);
+                if (!TextUtils.isEmpty(lineNode.text())) {
+                    busLine = new InComingBusLine();
+                    busLine.setName(lineNode.text());
+                    station.addBusLine(busLine);
+                }
             }
-            search.addStation(station);
+            if (station.getBusLines().size() > 0) {
+                search.addStation(station);
+            } else {
+                Log.d(TAG, "[search] " + station.getName() + " this station without bus line, ignore it");
+            }
         }
 
         BusLine busLine;
