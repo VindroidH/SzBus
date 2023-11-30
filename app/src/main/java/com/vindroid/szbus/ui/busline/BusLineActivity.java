@@ -12,7 +12,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import com.vindroid.szbus.App;
-import com.vindroid.szbus.BusCenter;
+import com.vindroid.szbus.source.BusCenter;
 import com.vindroid.szbus.R;
 import com.vindroid.szbus.databinding.ActivityBusLineBinding;
 import com.vindroid.szbus.model.BusLineDetail;

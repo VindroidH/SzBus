@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.vindroid.szbus.BusCenter;
+import com.vindroid.szbus.source.BusCenter;
 import com.vindroid.szbus.R;
 import com.vindroid.szbus.databinding.FragmentChooseBusLineBinding;
 import com.vindroid.szbus.helper.FavoriteHelper;

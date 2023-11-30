@@ -8,6 +8,7 @@ import com.vindroid.szbus.App;
 import com.vindroid.szbus.model.Favorite;
 import com.vindroid.szbus.model.InComingBusLine;
 import com.vindroid.szbus.model.Station;
+import com.vindroid.szbus.source.DataSource;
 import com.vindroid.szbus.utils.Constants;
 
 import org.json.JSONArray;
@@ -22,7 +23,8 @@ public class FavoriteHelper {
     private static final String TAG;
 
     private static final String SP_NAME = "favorite_sp";
-    private static final String SP_KEY_DATA = "data";
+    private static final String SP_KEY_DATA_SZGJ = "data";
+    private static final String SP_KEY_DATA_SZXING = "data_szxing";
 
     private static SharedPreferences mFavoriteSp = null;
 
@@ -41,7 +43,11 @@ public class FavoriteHelper {
         Log.d(TAG, "[add] station name: " + station.getName() +
                 ", bus line count: " + busLines.size());
         SharedPreferences sp = getFavoriteSp();
-        String str = sp.getString(SP_KEY_DATA, "[]");
+        String key = SP_KEY_DATA_SZGJ;
+        if (DataSource.SOURCE_SZXING.equals(DataSource.getDataSource())) {
+            key = SP_KEY_DATA_SZXING;
+        }
+        String str = sp.getString(key, "[]");
         try {
             JSONArray array = new JSONArray(str);
             int index = -1;
@@ -73,7 +79,7 @@ public class FavoriteHelper {
 
             array.put(data);
 
-            sp.edit().putString(SP_KEY_DATA, array.toString()).apply();
+            sp.edit().putString(key, array.toString()).apply();
         } catch (JSONException e) {
             Log.e(TAG, "[add] has exception", e);
         }
@@ -82,7 +88,11 @@ public class FavoriteHelper {
     public static List<Favorite> getAll() {
         List<Favorite> favoriteList = new ArrayList<>();
         SharedPreferences sp = getFavoriteSp();
-        String str = sp.getString(SP_KEY_DATA, "[]");
+        String key = SP_KEY_DATA_SZGJ;
+        if (DataSource.SOURCE_SZXING.equals(DataSource.getDataSource())) {
+            key = SP_KEY_DATA_SZXING;
+        }
+        String str = sp.getString(key, "[]");
         try {
             JSONArray array = new JSONArray(str);
             Favorite[] favorites = new Favorite[array.length()];
@@ -120,7 +130,11 @@ public class FavoriteHelper {
     public static void delete(String stationId) {
         Log.d(TAG, "[delete] station id: " + stationId);
         SharedPreferences sp = getFavoriteSp();
-        String str = sp.getString(SP_KEY_DATA, "[]");
+        String key = SP_KEY_DATA_SZGJ;
+        if (DataSource.SOURCE_SZXING.equals(DataSource.getDataSource())) {
+            key = SP_KEY_DATA_SZXING;
+        }
+        String str = sp.getString(key, "[]");
         try {
             JSONArray array = new JSONArray(str);
             for (int i = 0; i < array.length(); i++) {
@@ -131,7 +145,7 @@ public class FavoriteHelper {
                 }
             }
 
-            sp.edit().putString(SP_KEY_DATA, array.toString()).apply();
+            sp.edit().putString(key, array.toString()).apply();
         } catch (JSONException e) {
             Log.e(TAG, "[delete] has exception", e);
         }
@@ -149,7 +163,11 @@ public class FavoriteHelper {
 
     private static void move(String stationId, int moving) {
         SharedPreferences sp = getFavoriteSp();
-        String str = sp.getString(SP_KEY_DATA, "[]");
+        String key = SP_KEY_DATA_SZGJ;
+        if (DataSource.SOURCE_SZXING.equals(DataSource.getDataSource())) {
+            key = SP_KEY_DATA_SZXING;
+        }
+        String str = sp.getString(key, "[]");
         try {
             int movedIndex = -1;
             JSONArray array = new JSONArray(str);
@@ -178,7 +196,7 @@ public class FavoriteHelper {
                 }
             }
 
-            sp.edit().putString(SP_KEY_DATA, array.toString()).apply();
+            sp.edit().putString(key, array.toString()).apply();
         } catch (JSONException e) {
             Log.e(TAG, "[move] has exception", e);
         }

@@ -9,7 +9,7 @@ import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.vindroid.szbus.App;
-import com.vindroid.szbus.BusCenter;
+import com.vindroid.szbus.source.BusCenter;
 import com.vindroid.szbus.R;
 import com.vindroid.szbus.databinding.ActivitySearchBinding;
 import com.vindroid.szbus.model.SearchResult;

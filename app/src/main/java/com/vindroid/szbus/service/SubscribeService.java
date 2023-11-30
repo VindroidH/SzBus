@@ -19,7 +19,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.vindroid.szbus.App;
-import com.vindroid.szbus.BusCenter;
+import com.vindroid.szbus.source.BusCenter;
 import com.vindroid.szbus.R;
 import com.vindroid.szbus.helper.SubscribeHelper;
 import com.vindroid.szbus.model.InComingBusLine;

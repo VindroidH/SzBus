@@ -12,6 +12,10 @@ android {
         targetSdk 33
         versionCode 100000100
         versionName "1.0.0.1"
+
+        ndk {
+            abiFilters "armeabi"
+        }
     }
 
     buildTypes {
@@ -26,6 +30,11 @@ android {
     }
     buildFeatures {
         viewBinding true
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
     }
 }
 

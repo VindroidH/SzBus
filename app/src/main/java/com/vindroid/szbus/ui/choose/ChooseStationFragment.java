@@ -12,7 +12,7 @@ import android.widget.Toast;
 
 import com.vindroid.szbus.AdapterListener;
 import com.vindroid.szbus.App;
-import com.vindroid.szbus.BusCenter;
+import com.vindroid.szbus.source.BusCenter;
 import com.vindroid.szbus.R;
 import com.vindroid.szbus.databinding.FragmentChooseStationBinding;
 import com.vindroid.szbus.model.SearchResult;

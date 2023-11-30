@@ -9,6 +9,7 @@ import com.vindroid.szbus.App;
 import com.vindroid.szbus.model.Station;
 import com.vindroid.szbus.model.Subscribe;
 import com.vindroid.szbus.model.SubscribeBusLine;
+import com.vindroid.szbus.source.DataSource;
 import com.vindroid.szbus.utils.Constants;
 
 import org.json.JSONArray;
@@ -24,7 +25,8 @@ public class SubscribeHelper {
     public static final String ACTION_SUBSCRIBE_CHANGED = "com.vindroid.szbus.SUBSCRIBE_CHANGED";
 
     private static final String SP_NAME = "subscribe_sp";
-    private static final String SP_KEY_DATA = "data";
+    private static final String SP_KEY_DATA_SZGJ = "data";
+    private static final String SP_KEY_DATA_SZXING = "data_szxing";
 
     private static SharedPreferences mSubscribeSp = null;
 
@@ -44,7 +46,11 @@ public class SubscribeHelper {
                 + ", date: " + subscribe.getWeekBit()
                 + ", time: " + subscribe.getStartTime() + " ~ " + subscribe.getEndTime());
         SharedPreferences sp = getSubscribeSp();
-        String str = sp.getString(SP_KEY_DATA, "[]");
+        String key = SP_KEY_DATA_SZGJ;
+        if (DataSource.SOURCE_SZXING.equals(DataSource.getDataSource())) {
+            key = SP_KEY_DATA_SZXING;
+        }
+        String str = sp.getString(key, "[]");
         try {
             JSONArray array = new JSONArray(str);
             for (int i = 0; i < array.length(); i++) {
@@ -80,7 +86,7 @@ public class SubscribeHelper {
 
             array.put(data);
 
-            sp.edit().putString(SP_KEY_DATA, array.toString()).apply();
+            sp.edit().putString(key, array.toString()).apply();
         } catch (JSONException e) {
             Log.e(TAG, "[add] has exception", e);
         }
@@ -90,7 +96,11 @@ public class SubscribeHelper {
     public static List<Subscribe> getAll() {
         List<Subscribe> subscribes = new ArrayList<>();
         SharedPreferences sp = getSubscribeSp();
-        String str = sp.getString(SP_KEY_DATA, "[]");
+        String key = SP_KEY_DATA_SZGJ;
+        if (DataSource.SOURCE_SZXING.equals(DataSource.getDataSource())) {
+            key = SP_KEY_DATA_SZXING;
+        }
+        String str = sp.getString(key, "[]");
         try {
             JSONArray array = new JSONArray(str);
             Subscribe subscribe;
@@ -129,7 +139,11 @@ public class SubscribeHelper {
 
     public static void delete(String stationId) {
         SharedPreferences sp = getSubscribeSp();
-        String str = sp.getString(SP_KEY_DATA, "[]");
+        String key = SP_KEY_DATA_SZGJ;
+        if (DataSource.SOURCE_SZXING.equals(DataSource.getDataSource())) {
+            key = SP_KEY_DATA_SZXING;
+        }
+        String str = sp.getString(key, "[]");
         try {
             JSONArray array = new JSONArray(str);
             for (int i = 0; i < array.length(); i++) {
@@ -140,7 +154,7 @@ public class SubscribeHelper {
                 }
             }
 
-            sp.edit().putString(SP_KEY_DATA, array.toString()).apply();
+            sp.edit().putString(key, array.toString()).apply();
         } catch (JSONException e) {
             Log.e(TAG, "[delete] has exception", e);
         }
