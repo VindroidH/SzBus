@@ -3,9 +3,12 @@ package com.vindroid.szbus;
 import android.app.Application;
 import android.content.Context;
 
+import com.vindroid.szbus.utils.Constants;
+
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
@@ -65,6 +68,10 @@ public class App extends Application {
                     .followRedirects(true)
                     .followSslRedirects(true)
                     .retryOnConnectionFailure(true)
+                    .callTimeout(Constants.DEFAULT_NETWORK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
+                    .connectTimeout(Constants.DEFAULT_NETWORK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
+                    .readTimeout(Constants.DEFAULT_NETWORK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
+                    .writeTimeout(Constants.DEFAULT_NETWORK_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS)
                     .build();
         }
         return mHttpClient;

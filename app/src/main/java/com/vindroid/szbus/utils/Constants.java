@@ -49,4 +49,5 @@ public class Constants {
     public static final int UNKNOWN_BIT = 0b0;
 
     public static final int DEFAULT_AUTO_REFRESH_MILLIS = 30000;
+    public static final int DEFAULT_NETWORK_TIMEOUT_MILLIS = 10000;
 }
