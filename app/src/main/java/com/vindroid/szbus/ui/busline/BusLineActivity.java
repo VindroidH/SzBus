@@ -93,7 +93,16 @@ public class BusLineActivity extends AppCompatActivity
         super.onResume();
         if (System.currentTimeMillis() - mUpdateTimeMills >= Constants.REFRESH_MIN_INTERVAL) {
             refreshBusInfo();
+        } else {
+            mHandler.removeMessages(WHAT_REFRESH);
+            mHandler.sendEmptyMessageDelayed(WHAT_REFRESH, Constants.DEFAULT_AUTO_REFRESH_MILLIS);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mHandler.removeMessages(WHAT_REFRESH);
     }
 
     @Override
