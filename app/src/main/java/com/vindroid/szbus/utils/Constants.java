@@ -47,4 +47,6 @@ public class Constants {
     public static final int FRIDAY_BIT = 0b10;
     public static final int SATURDAY_BIT = 0b1;
     public static final int UNKNOWN_BIT = 0b0;
+
+    public static final int DEFAULT_AUTO_REFRESH_MILLIS = 30000;
 }

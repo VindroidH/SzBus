@@ -3,6 +3,9 @@ package com.vindroid.szbus.ui.station;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
@@ -18,6 +21,7 @@ import com.vindroid.szbus.model.StationDetail;
 import com.vindroid.szbus.utils.Constants;
 import com.vindroid.szbus.utils.Utils;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -32,6 +36,17 @@ public class StationActivity extends AppCompatActivity implements View.OnClickLi
     private StationDetail mStationDetail = null;
     private boolean mIsRefreshing = false;
     private long mUpdateTimeMills;
+
+    private final int WHAT_REFRESH = 0;
+    private final Handler mHandler = new Handler(Looper.myLooper()) {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == WHAT_REFRESH) {
+                refreshStationInfo();
+            }
+        }
+    };
 
     static {
         TAG = App.getTag(StationActivity.class.getSimpleName());
@@ -103,6 +118,9 @@ public class StationActivity extends AppCompatActivity implements View.OnClickLi
         }
         mBinding.loading.hide();
         mBinding.contentRoot.setVisibility(View.VISIBLE);
+
+        mHandler.removeMessages(WHAT_REFRESH);
+        mHandler.sendEmptyMessageDelayed(WHAT_REFRESH, Constants.DEFAULT_AUTO_REFRESH_MILLIS);
     }
 
     private void refreshStationInfo() {

@@ -3,6 +3,9 @@ package com.vindroid.szbus.ui.busline;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
@@ -10,6 +13,11 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DiffUtil;
 
 import com.vindroid.szbus.App;
 import com.vindroid.szbus.BusCenter;
@@ -26,10 +34,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.DiffUtil;
-
 public class BusLineActivity extends AppCompatActivity
         implements View.OnClickListener, Toolbar.OnMenuItemClickListener,
         BusCenter.GetBusLineListener, BusCenter.GetBusLineRealTimeInfoListener {
@@ -43,6 +47,17 @@ public class BusLineActivity extends AppCompatActivity
     private boolean mIsRefreshing = false;
     private boolean mIsGetBusLineDone = false;
     private long mUpdateTimeMills;
+
+    private final int WHAT_REFRESH = 0;
+    private final Handler mHandler = new Handler(Looper.myLooper()) {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == WHAT_REFRESH) {
+                refreshBusInfo();
+            }
+        }
+    };
 
     static {
         TAG = App.getTag(BusLineActivity.class.getSimpleName());
@@ -149,6 +164,9 @@ public class BusLineActivity extends AppCompatActivity
             mBinding.busLineRoot.updateTime.setText(R.string.update_failed);
             Toast.makeText(this, R.string.cannot_get_data, Toast.LENGTH_SHORT).show();
         }
+
+        mHandler.removeMessages(WHAT_REFRESH);
+        mHandler.sendEmptyMessageDelayed(WHAT_REFRESH, Constants.DEFAULT_AUTO_REFRESH_MILLIS);
     }
 
     private void refreshBusLineInfo() {
