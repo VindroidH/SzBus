@@ -165,6 +165,7 @@ public class BusParser {
         for (Iterator<String> it = standInfo.keys(); it.hasNext(); ) {
             String key = it.next();
             JSONArray values = standInfo.getJSONArray(key); // 只取一辆车，多辆同时进站无意义
+            if (values.length() == 0) continue;
             JSONObject value = values.getJSONObject(0);
             bus = new RunningBus();
             bus.setInfo(value.getString("busInfo"));
