@@ -157,7 +157,6 @@ public class FavoriteHelper {
                 if (array.getJSONObject(i).getJSONObject(Constants.KEY_STATION)
                         .getString(Constants.KEY_ID).equals(stationId)) {
                     movedIndex = array.getJSONObject(i).getInt(Constants.KEY_INDEX) + moving;
-                    Log.d(TAG, "test2 i " + movedIndex);
                     array.getJSONObject(i).put(Constants.KEY_INDEX, movedIndex);
                     break;
                 }

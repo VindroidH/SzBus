@@ -84,7 +84,7 @@ public class BusCenter {
                 mBusLine = new BusParser().getBusLine(id);
                 return true;
             } catch (Exception e) {
-                Log.e(TAG, "[GetBus] has exception", e);
+                Log.e(TAG, "[GetBusLine] has exception", e);
                 mBusLine = new BusLineDetail();
                 return false;
             }
@@ -148,7 +148,7 @@ public class BusCenter {
                 mInfo = new BusParser().getBusLineRealTimeInfo(id);
                 return true;
             } catch (Exception e) {
-                Log.e(TAG, "[GetStation] has exception", e);
+                Log.e(TAG, "[GetBusLineRealTimeInfo] has exception", e);
                 mInfo = new BusLineRealTimeInfo();
                 return false;
             }
@@ -157,7 +157,7 @@ public class BusCenter {
         @Override
         protected void onPostExecute(Boolean result) {
             super.onPostExecute(result);
-            Log.d(TAG, "[getStation] result: " + result
+            Log.d(TAG, "[GetBusLineRealTimeInfo] result: " + result
                     + ", next depart: " + mInfo.getNextDepartTime()
                     + ", bus size: " + mInfo.getRunningBuses().size());
             if (mListener != null) {

@@ -100,7 +100,6 @@ public class ChooseBusLineFragment extends Fragment implements BusCenter.GetStat
             for (InComingBusLine item : mAdapter.getSelectedItems()) {
                 SubscribeBusLine busLine = new SubscribeBusLine(item.getId(), item.getName());
                 try {
-                    Log.d("WuBus.Test", "aaa " + mAdapter.getExtraValues().get(item.getId()));
                     busLine.setAhead(Integer.parseInt(
                             Objects.requireNonNull(mAdapter.getExtraValues().get(item.getId()))));
                 } catch (NumberFormatException | NullPointerException e) {
