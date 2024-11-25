@@ -4,14 +4,14 @@ plugins {
 
 android {
     namespace 'com.vindroid.szbus'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.vindroid.szbus"
         minSdk 28
-        targetSdk 33
-        versionCode 100000100
-        versionName "1.0.0.1"
+        targetSdk 34
+        versionCode 100000200
+        versionName "1.0.0.2"
     }
 
     buildTypes {

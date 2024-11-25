@@ -7,13 +7,11 @@ import com.vindroid.szbus.model.BusLineDetail;
 import com.vindroid.szbus.model.BusLineRealTimeInfo;
 import com.vindroid.szbus.model.SearchResult;
 import com.vindroid.szbus.model.StationDetail;
-import com.vindroid.szbus.parser.BusParser;
+import com.vindroid.szbus.source.BusParserInterface;
+import com.vindroid.szbus.source.szbus.SzBusParser;
+import com.vindroid.szbus.source.szbusv2.SzBusV2Parser;
+import com.vindroid.szbus.utils.Config;
 
-/*
-    test case:
-        山塘街 60232c7e-37f5-4336-aafb-aec49478ff2d
-        406 e82fad29-7847-44c7-971d-9ab98d8f9927
- */
 public class BusCenter {
     private static final String TAG;
 
@@ -48,9 +46,8 @@ public class BusCenter {
         @Override
         protected Boolean doInBackground(String... strings) {
             String keyword = strings[0];
-            BusParser parser = new BusParser();
             try {
-                mSearchResult = parser.search(keyword);
+                mSearchResult = getParser().search(keyword);
                 return true;
             } catch (Exception e) {
                 Log.e(TAG, "[SearchTask] has exception", e);
@@ -81,7 +78,7 @@ public class BusCenter {
         protected Boolean doInBackground(String... strings) {
             String id = strings[0];
             try {
-                mBusLine = new BusParser().getBusLine(id);
+                mBusLine = getParser().getBusLine(id);
                 return true;
             } catch (Exception e) {
                 Log.e(TAG, "[GetBusLine] has exception", e);
@@ -113,7 +110,7 @@ public class BusCenter {
         protected Boolean doInBackground(String... strings) {
             String id = strings[0];
             try {
-                mStation = new BusParser().getStation(id);
+                mStation = getParser().getStation(id);
                 return true;
             } catch (Exception e) {
                 Log.e(TAG, "[GetStation] has exception", e);
@@ -145,7 +142,7 @@ public class BusCenter {
         protected Boolean doInBackground(String... strings) {
             String id = strings[0];
             try {
-                mInfo = new BusParser().getBusLineRealTimeInfo(id);
+                mInfo = getParser().getBusLineRealTimeInfo(id);
                 return true;
             } catch (Exception e) {
                 Log.e(TAG, "[GetBusLineRealTimeInfo] has exception", e);
@@ -163,6 +160,14 @@ public class BusCenter {
             if (mListener != null) {
                 mListener.onGetBusLineRealTimeInfoCompleted(result, mInfo, null);
             }
+        }
+    }
+
+    private static BusParserInterface getParser() {
+        if (Config.getSource() == Config.Source.SzBusV2) {
+            return new SzBusV2Parser();
+        } else {
+            return new SzBusParser();
         }
     }
 }

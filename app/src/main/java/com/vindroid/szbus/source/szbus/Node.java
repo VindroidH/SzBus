@@ -1,4 +1,4 @@
-package com.vindroid.szbus.parser;
+package com.vindroid.szbus.source.szbus;
 
 import com.vindroid.szbus.utils.StringUtils;
 

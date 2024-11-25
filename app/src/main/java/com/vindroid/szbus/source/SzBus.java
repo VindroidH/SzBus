@@ -1,4 +1,4 @@
-package com.vindroid.szbus.utils;
+package com.vindroid.szbus.source;
 
 public class SzBus {
     public static final String URL_SITE = "https://szgj.2500.tv";

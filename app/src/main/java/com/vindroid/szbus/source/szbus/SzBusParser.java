@@ -1,4 +1,4 @@
-package com.vindroid.szbus.parser;
+package com.vindroid.szbus.source.szbus;
 
 import android.accounts.NetworkErrorException;
 import android.text.TextUtils;
@@ -13,9 +13,10 @@ import com.vindroid.szbus.model.InComingBusLine;
 import com.vindroid.szbus.model.RunningBus;
 import com.vindroid.szbus.model.SearchResult;
 import com.vindroid.szbus.model.StationDetail;
+import com.vindroid.szbus.source.BusParserInterface;
+import com.vindroid.szbus.source.SzBus;
 import com.vindroid.szbus.utils.Constants;
 import com.vindroid.szbus.utils.StringUtils;
-import com.vindroid.szbus.utils.SzBus;
 import com.vindroid.szbus.utils.SzSubway;
 
 import org.json.JSONArray;
@@ -25,6 +26,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,16 +34,17 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public class BusParser {
+public class SzBusParser implements BusParserInterface {
     private static final String TAG;
 
     private final String KEY_USER_AGENT = "User-Agent";
     private final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.36";
 
     static {
-        TAG = App.getTag(BusParser.class.getSimpleName());
+        TAG = App.getTag(SzBusParser.class.getSimpleName());
     }
 
+    @Override
     public SearchResult search(String keyword) throws NetworkErrorException {
         SearchResult search = new SearchResult();
         if (TextUtils.isEmpty(keyword)) return search;
@@ -53,14 +56,14 @@ public class BusParser {
         List<Node> busNodes = new Node(html).list("div.buslinediv > div > a");
         Log.d(TAG, "[search] station count: " + stationNodes.size() + ", bus count: " + busNodes.size());
 
-        if (stationNodes.size() > 0 && busNodes.size() == 0) {
-            search.setType(SearchResult.Type.Station);
-        } else if (stationNodes.size() == 0 && busNodes.size() > 0) {
-            search.setType(SearchResult.Type.Bus);
+        if (stationNodes.size() == 0 && busNodes.size() == 0) {
+            search.setType(SearchResult.Type.None);
         } else if (stationNodes.size() > 0 && busNodes.size() > 0) {
             search.setType(SearchResult.Type.Both);
+        } else if (stationNodes.size() > 0) {
+            search.setType(SearchResult.Type.Station);
         } else {
-            search.setType(SearchResult.Type.None);
+            search.setType(SearchResult.Type.Bus);
         }
 
         StationDetail station;
@@ -103,6 +106,7 @@ public class BusParser {
         return search;
     }
 
+    @Override
     public BusLineDetail getBusLine(String busLineId) throws NetworkErrorException {
         BusLineDetail busLine = new BusLineDetail();
         busLine.setId(busLineId);
@@ -150,6 +154,7 @@ public class BusParser {
         return busLine;
     }
 
+    @Override
     public BusLineRealTimeInfo getBusLineRealTimeInfo(String busLineId) throws NetworkErrorException, JSONException {
         BusLineRealTimeInfo runningInfo = new BusLineRealTimeInfo();
         String api = SzBus.API_BUS_LINE + busLineId;
@@ -176,6 +181,7 @@ public class BusParser {
         return runningInfo;
     }
 
+    @Override
     public StationDetail getStation(String stationId) throws NetworkErrorException {
         StationDetail station = new StationDetail();
         station.setId(stationId);
@@ -227,11 +233,11 @@ public class BusParser {
     private String getResponseBody(OkHttpClient client, Request request, boolean retry) throws NetworkErrorException {
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
-                byte[] bodyBytes = response.body().bytes();
+                byte[] bodyBytes = response.body() == null ? new byte[]{} : response.body().bytes();
                 String body = new String(bodyBytes);
                 Matcher m = Pattern.compile("charset=([\\w\\-]+)").matcher(body);
                 if (m.find()) {
-                    body = new String(bodyBytes, m.group(1));
+                    body = new String(bodyBytes, Objects.requireNonNull(m.group(1)));
                 }
                 return body;
             } else if (retry)
